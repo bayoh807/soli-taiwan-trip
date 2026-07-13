@@ -657,7 +657,7 @@ async function downloadResult() {
     <div v-if="state.cur > 0 && state.cur < 4 && state.girlIn" class="char-wrap" aria-hidden="true">
       <div class="char-col">
         <div :key="girlBubbleKey" class="speech-bubble"
-             :ref="el => el && initBubble(el, girlBubbleLines.value)"></div>
+             :ref="el => el && initBubble(el, girlBubbleLines)"></div>
         <div :class="['girl-char', { 'is-excited': state.girlExcited }]"
              :style="girlBgStyle"></div>
       </div>
