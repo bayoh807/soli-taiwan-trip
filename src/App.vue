@@ -637,14 +637,11 @@ async function downloadResult() {
   <div class="hud">
     <template v-for="(st, i) in steps" :key="i">
       <div class="hud-node">
-        <Transition name="hud-pop">
-          <img v-if="st.isDone && st.alienImg"
-               :key="'a' + i + hudFlashKeys[i]"
-               :src="st.alienImg" class="hud-alien-img" />
-          <div v-else
-               :key="'c' + i + st.isDone"
-               :style="hudCircleStyle(st.isDone)">{{ st.isDone ? '✓' : String(i+1) }}</div>
-        </Transition>
+        <img v-if="st.isDone && st.alienImg"
+             :key="'a' + i + hudFlashKeys[i]"
+             :src="st.alienImg" class="hud-alien-img"
+             :class="{ 'hud-flash': hudFlashKeys[i] > 0 }" />
+        <div v-else :style="hudCircleStyle(st.isDone)">{{ st.isDone ? '✓' : String(i+1) }}</div>
       </div>
       <div v-if="i < steps.length - 1" class="hud-sep"></div>
     </template>
@@ -1000,17 +997,21 @@ async function downloadResult() {
   animation: sb-bob 2.8s ease-in-out infinite;
   margin-bottom: 6px;
   pointer-events: none;
-  min-width: 6em;
+  min-width: 5em;
+  max-width: clamp(140px, 30vw, 210px);
   text-align: center;
 }
 .speech-bubble .sb-text {
   font-family: 'ZCOOL KuaiLe', system-ui, sans-serif;
   font-size: clamp(13px, 2.6vw, 16px);
-  line-height: 1.35;
+  line-height: 1.45;
   color: #e23b3b;
   text-align: center;
-  white-space: nowrap;
-  min-height: 1.35em;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  hyphens: none;
+  min-height: 1.45em;
   text-shadow: 0 1px 0 rgba(255,255,255,.8);
   letter-spacing: 1px;
 }
@@ -1378,8 +1379,8 @@ async function downloadResult() {
 @keyframes sb-bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
 @keyframes sb-caret { 0%,50% { opacity:1 } 50.01%,100% { opacity:0 } }
 
-/* ── HUD node flash (on completion) ─────────────────────────── */
-.hud-pop-enter-active { animation: hudFlash .55s cubic-bezier(.2,1.3,.5,1); }
+/* ── HUD node flash (on scene navigation only) ───────────────── */
+.hud-flash { animation: hudFlash .55s cubic-bezier(.2,1.3,.5,1); }
 @keyframes hudFlash {
   0%   { transform: scale(0) rotate(-15deg); opacity: 0; filter: brightness(5) drop-shadow(0 0 10px #fff); }
   55%  { transform: scale(1.3) rotate(6deg);  filter: brightness(2) drop-shadow(0 0 14px #ffd700cc); }
