@@ -735,13 +735,40 @@ watch(() => state.scene4PanelVisible, async (visible) => {
   }, 1200)
 })
 
+// ─── Background Music (YouTube IFrame API) ───────────────────────────────────
+const bgMuted = ref(false)
+let ytPlayer = null
+
+function initYTPlayer() {
+  ytPlayer = new window.YT.Player('yt-bg-player', {
+    videoId: 'iqEr3P78fz8',
+    playerVars: { autoplay: 1, loop: 1, playlist: 'iqEr3P78fz8', controls: 0, rel: 0, mute: 0 },
+    events: {
+      onReady(e) { e.target.setVolume(60); e.target.playVideo() },
+    }
+  })
+}
+
+function toggleBgMute() {
+  if (!ytPlayer) return
+  bgMuted.value = !bgMuted.value
+  bgMuted.value ? ytPlayer.mute() : ytPlayer.unMute()
+}
+
 onMounted(() => {
   preloadImages(sceneAssets[0])
-  // defer spot photos — avoid competing with first paint
   setTimeout(() => preloadImages(sceneAssets[1]), 2000)
   window.addEventListener('resize', updateArrowPos)
   nextTick(updateArrowPos)
   setTimeout(() => { questVisible.value = true }, 1000)
+  // Load YouTube IFrame API
+  if (window.YT?.Player) { initYTPlayer() }
+  else {
+    window.onYouTubeIframeAPIReady = initYTPlayer
+    const s = document.createElement('script')
+    s.src = 'https://www.youtube.com/iframe_api'
+    document.head.appendChild(s)
+  }
 })
 
 async function downloadResult() {
@@ -813,6 +840,16 @@ async function downloadResult() {
     <div class="petal" style="left:66%;width:11px;height:10px;animation-duration:11s;animation-delay:-8s;background:linear-gradient(135deg,#ffb7d2,#ff8fb8)"></div>
     <div class="petal" style="left:87%;width:8px;height:7px;animation-duration:14s;animation-delay:-2s;background:linear-gradient(135deg,#ffd9e8,#ffb0cc)"></div>
   </div>
+
+  <!-- ── YouTube BG Player ────────────────────────────────────── -->
+  <div style="position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden;left:-9999px">
+    <div id="yt-bg-player"></div>
+  </div>
+
+  <!-- ── Music Toggle ──────────────────────────────────────────── -->
+  <button class="music-btn" @click="toggleBgMute" :title="bgMuted ? '開啟音樂' : '靜音'">
+    {{ bgMuted ? '🔇' : '🔊' }}
+  </button>
 
   <!-- ── Language Toggle ──────────────────────────────────────── -->
   <div class="lang-bar">
@@ -1109,6 +1146,21 @@ async function downloadResult() {
 }
 
 /* ── Language Toggle ─────────────────────────────────────────── */
+.music-btn {
+  position: fixed;
+  top: max(10px, env(safe-area-inset-top));
+  left: max(14px, env(safe-area-inset-left));
+  z-index: 70;
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 2px solid rgba(107,78,42,.35);
+  background: rgba(255,255,255,.97);
+  cursor: pointer; font-size: 16px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+  box-shadow: 0 2px 7px rgba(0,0,0,.22);
+  transition: transform .14s ease;
+}
+.music-btn:hover { transform: scale(1.1); }
 .lang-bar {
   position: fixed;
   top: max(10px, env(safe-area-inset-top));
