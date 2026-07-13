@@ -73,7 +73,7 @@ function initBubble(el, lines, opts = {}) {
   if (!el) return null
   if (el.querySelector('.sb-text')) return null  // already initialised; re-render, not remount
   el.setAttribute('data-lines', Array.isArray(lines) ? lines.join('|') : lines)
-  return SpeechBubble(el, { loop: false, speed: 85, holdBetween: 1000, clearGap: 200, ...opts })
+  return SpeechBubble(el, { loop: false, speed: 85, holdBetween: 600, clearGap: 200, ...opts })
 }
 
 // ─── i18n ─────────────────────────────────────────────────────────────────────
