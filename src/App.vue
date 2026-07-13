@@ -737,7 +737,8 @@ watch(() => state.scene4PanelVisible, async (visible) => {
 
 onMounted(() => {
   preloadImages(sceneAssets[0])
-  preloadImages(sceneAssets[1])
+  // defer spot photos — avoid competing with first paint
+  setTimeout(() => preloadImages(sceneAssets[1]), 2000)
   window.addEventListener('resize', updateArrowPos)
   nextTick(updateArrowPos)
   setTimeout(() => { questVisible.value = true }, 1000)
@@ -1135,7 +1136,7 @@ async function downloadResult() {
 /* ── Progress HUD ────────────────────────────────────────────── */
 .hud {
   position: fixed;
-  top: max(12px, env(safe-area-inset-top));
+  top: max(22px, calc(env(safe-area-inset-top) + 10px));
   left: 50%;
   transform: translateX(-50%);
   z-index: 60;
