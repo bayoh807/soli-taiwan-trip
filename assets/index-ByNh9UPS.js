@@ -40,7 +40,7 @@ PERFORMANCE OF THIS SOFTWARE.
 
 你的台灣冒險正式展開～`,mYesBtn:"開啟旅程",mNoonEmoji:"🎇",mNoonTitle:"獲得神秘道具！",mNoonBody:`🎇 🎇 🎇
 獲得火與夜的祝福`,mNoonBtn:"收入背包",mDoneEmoji:"🏆",mDoneTitle:"旅程完成！",mDoneBody:`你已選好台灣一日行程，
-準備出發了嗎？`,mDoneBtn:"查看行程",boyGreet:["歡迎來到台灣！","期待在台灣見到你！"],girl1Pre:"早上要去哪裡呢？",girl1Post:"好期待！",girl2Pre:"要去哪裡玩呢？",girl2Post:"走吧！走吧！",girl3Pre:"台灣的晚上在幹嘛呢？",girl3Post:"❤️",girl4Bubble:"好開心！",boy4Bubble:"我很期待一起出去玩！"},en:{depart:"Start",am:"AM",noon:"Noon",pm:"PM",stop1:"Stop 1",stop2:"Stop 2",stop3:"Stop 3",questHeader:"ADVENTURE · QUEST",questTitle:`Ready for your
+準備出發了嗎？`,mDoneBtn:"查看行程",boyGreet:["歡迎來到台灣！","期待在台灣見到你！"],girl1Pre:"早上要去哪裡呢？",girl1Post:"好期待！",girl2Pre:"要去哪裡玩呢？",girl2Post:"走吧！走吧",girl3Pre:"台灣的晚上在幹嘛呢？",girl3Post:"❤️",girl4Bubble:"好開心！",boy4Bubble:"我很期待一起出去玩！"},en:{depart:"Start",am:"AM",noon:"Noon",pm:"PM",stop1:"Stop 1",stop2:"Stop 2",stop3:"Stop 3",questHeader:"ADVENTURE · QUEST",questTitle:`Ready for your
 Taiwan adventure?`,questSub:"READY FOR YOUR TAIWAN ADVENTURE?",yesBtn:"YES, Let's Go!",noBtn:"NO, hmm...",pick:"Choose a destination",pickLast:"Choose your final stop",locked1:"🔒 Go back to start to unlock",locked:"🔒 Complete the previous stop first",complete:"🏝️ Your Taiwan Journey · COMPLETE",confirmPick:"Confirm",download:"📥 Save Screenshot",downloadHint:"Download & share with Justin 📮",downloadFail:"Screenshot failed — use your phone's screen capture",hint:"Psst… the NO button is a bit slippery 😏",selected:"✓ Selected",mYesEmoji:"🎁",mYesTitle:"Mystery Box GET!",mYesBody:`You received a "Vietnam Gift Box"!
 
 Your Taiwan adventure begins～`,mYesBtn:"Start Journey",mNoonEmoji:"🎇",mNoonTitle:"Mysterious Item Found!",mNoonBody:`🎇 🎇 🎇
