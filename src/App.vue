@@ -95,7 +95,9 @@ const I18N  = {
     questSub:'READY FOR YOUR TAIWAN ADVENTURE?',
     yesBtn:'YES 出發！', noBtn:'NO 再想想',
     pick:'選一個地點展開探索', pickLast:'選一個地點完成旅程',
+    pick2:'選 1-2 個地點（可複選，最多 2 個）',
     pick2Note:'下午的行程想混搭的話跟我說喔',
+    deselect:'取消選擇',
     locked1:'🔒 先回到起點回答問題，即可解鎖',
     locked:'🔒 完成上一站，解鎖此地點',
     complete:'🏝️ 你的台灣旅程 · COMPLETE',
@@ -127,7 +129,9 @@ const I18N  = {
     questSub:'READY FOR YOUR TAIWAN ADVENTURE?',
     yesBtn:"YES, Let's Go!", noBtn:'NO, hmm...',
     pick:'Choose a destination', pickLast:'Choose your final stop',
+    pick2:'Choose 1-2 destinations (up to 2)',
     pick2Note:'下午的行程想混搭的話跟我說喔',
+    deselect:'Deselect',
     locked1:'🔒 Go back to start to unlock',
     locked:'🔒 Complete the previous stop first',
     complete:'🏝️ Your Taiwan Journey · COMPLETE',
@@ -159,7 +163,9 @@ const I18N  = {
     questSub:'대만 어드벤처 준비 완료?',
     yesBtn:'YES, 출발!', noBtn:'NO, 글쎄...',
     pick:'목적지를 선택하세요', pickLast:'마지막 목적지를 선택하세요',
+    pick2:'목적지 1-2개 선택 (최대 2개)',
     pick2Note:'下午的行程想混搭的話跟我說喔',
+    deselect:'선택 취소',
     locked1:'🔒 시작 지점으로 돌아가서 잠금 해제',
     locked:'🔒 이전 단계를 완료해야 합니다',
     complete:'🏝️ 대만 여행 · 완료',
@@ -191,7 +197,9 @@ const I18N  = {
     questSub:'READY FOR YOUR TAIWAN ADVENTURE?',
     yesBtn:'YES 出発！', noBtn:'NO まだかな…',
     pick:'目的地を選ぼう', pickLast:'最後の場所を選ぼう',
+    pick2:'目的地を1-2つ選ぼう（最大2つ）',
     pick2Note:'下午的行程想混搭的話跟我說喔',
+    deselect:'選択解除',
     locked1:'🔒 最初に戻って質問に答えてね',
     locked:'🔒 前のステージをクリアしてね',
     complete:'🏝️ 台湾の旅 · COMPLETE',
@@ -220,11 +228,11 @@ const tr = computed(() => I18N[lang.value] ?? I18N.en)
 
 // ─── Spot Data ────────────────────────────────────────────────────────────────
 const S1 = [
-  { key:'jiufen',  emoji:'🏮', name:'九份老街',  sub:'LANTERN TOWN',
-    desc:'山城老街掛滿紅燈籠，傳說是宮崎駿《神隱少女》的靈感來源，霧雨中格外有詩意。',
+  { key:'dadaocheng1', emoji:'👘', name:'大稻埕', sub:'QIPAO & OLD STREET',
+    desc:'百年迪化街漫步，在專業師傅的旗袍店挑選一套屬於你的旗袍，穿著它拍下最美的台灣記憶。',
     photos:[
-      'https://picsum.photos/seed/jiufen1/480/280',
-      'https://picsum.photos/seed/jiufen2/480/280',
+      'https://picsum.photos/seed/dada1a/480/280',
+      'https://picsum.photos/seed/dada1b/480/280',
     ]},
   { key:'palace',  emoji:'🏛️', name:'故宮博物院', sub:'NATIONAL MUSEUM',
     desc:'珍藏全球最豐富的中華文物，翠玉白菜、肉形石等鎮館之寶，走進五千年文明史。',
@@ -252,8 +260,8 @@ const S2 = [
       'https://picsum.photos/seed/houtong1/480/280',
       'https://picsum.photos/seed/houtong2/480/280',
     ]},
-  { key:'art',     emoji:'🎨', name:'藝術展',   sub:'ART EXHIBITION',
-    desc:'台北藝文選品，從當代藝術到設計展，讓旅程多一份品味與驚喜。',
+  { key:'art',     emoji:'☕', name:'藝術展 + 咖啡廳',   sub:'ART & CAFÉ',
+    desc:'台北特色選品藝術展，逛展後走進旁邊的獨立咖啡廳發呆。點擊圖片可查看活動詳情。',
     photos:[
       'https://picsum.photos/seed/art1/480/280',
       'https://picsum.photos/seed/art2/480/280',
@@ -272,7 +280,7 @@ const S3 = [
       'https://picsum.photos/seed/shilin1/480/280',
       'https://picsum.photos/seed/shilin2/480/280',
     ]},
-  { key:'dadaocheng',emoji:'🏮', name:'大稻埕夜市', sub:'DADAOCHENG MARKET',
+  { key:'dadaocheng',emoji:'🧧', name:'大稻埕夜市', sub:'DADAOCHENG MARKET',
     desc:'百年迪化街旁的老台北夜市，融合南北雜貨、古早味小吃與文青選品，全年都開、夜晚最美。',
     photos:[
       'https://picsum.photos/seed/dadao1/480/280',
@@ -297,8 +305,9 @@ const state = reactive({
   girlExcited:   false,
 })
 
-const worldEl  = ref(null)
-const noBtnEl  = ref(null)
+const worldEl      = ref(null)
+const noBtnEl      = ref(null)
+const questVisible = ref(false)
 const sceneEls = reactive({})
 let jumpTimer        = null
 let scene4Interval   = null
@@ -310,19 +319,26 @@ let scene4Blob       = null  // pre-generated screenshot blob
 const sceneCount   = computed(() => state.unlocked >= 4 ? 5 : 4)
 const done         = computed(() => state.unlocked >= 4)
 const leftVisible  = computed(() => state.cur >= 2 && state.cur < 4)
-const rightVisible = computed(() => state.cur >= 1 && state.cur < 4 && !!state.sel[state.cur])
+const rightVisible = computed(() => {
+  if (state.cur < 1 || state.cur >= 4) return false
+  if (state.cur === 2) return (Array.isArray(state.sel[2]) ? state.sel[2].length : 0) > 0
+  return !!state.sel[state.cur]
+})
 
 const steps = computed(() => [
   { label: tr.value.depart, isDone: state.started,  alienImg: null   },
   { label: tr.value.am,     isDone: !!state.sel[1], alienImg: alien1 },
-  { label: tr.value.noon,   isDone: !!state.sel[2], alienImg: alien2 },
+  { label: tr.value.noon,   isDone: (Array.isArray(state.sel[2]) ? state.sel[2].length : 0) > 0, alienImg: alien2 },
   { label: tr.value.pm,     isDone: !!state.sel[3], alienImg: alien3 },
 ])
-const picks = computed(() => [
-  { stage: 1, spot: S1.find(o => o.key === state.sel[1]) },
-  { stage: 2, spot: S2.find(o => o.key === state.sel[2]) },
-  { stage: 3, spot: S3.find(o => o.key === state.sel[3]) },
-].filter(o => o.spot).map(o => ({ ...o.spot, stage: o.stage })))
+const picks = computed(() => {
+  const sel2keys = Array.isArray(state.sel[2]) ? state.sel[2] : []
+  return [
+    { stage: 1, spot: S1.find(o => o.key === state.sel[1]) },
+    ...sel2keys.map(key => ({ stage: 2, spot: S2.find(o => o.key === key) })),
+    { stage: 3, spot: S3.find(o => o.key === state.sel[3]) },
+  ].filter(o => o.spot).map(o => ({ ...o.spot, stage: o.stage }))
+})
 
 // NO button
 const noBaseStyle = {
@@ -489,10 +505,19 @@ function onNo() {
 
 function select(stage, key) {
   if (state.unlocked < stage) return
-  state.sel = { ...state.sel, [stage]: key }
-  if (stage === 1 && state.unlocked < 2) state.unlocked = 2
-  else if (stage === 2 && state.unlocked < 3) state.unlocked = 3
-  else if (stage === 3 && state.unlocked < 4) state.unlocked = 4
+  if (stage === 2) {
+    const arr = Array.isArray(state.sel[2]) ? state.sel[2] : []
+    if (arr.includes(key)) {
+      state.sel = { ...state.sel, 2: arr.filter(k => k !== key) }
+    } else if (arr.length < 2) {
+      state.sel = { ...state.sel, 2: [...arr, key] }
+    }
+    if ((state.sel[2]?.length ?? 0) > 0 && state.unlocked < 3) state.unlocked = 3
+  } else {
+    state.sel = { ...state.sel, [stage]: key }
+    if (stage === 1 && state.unlocked < 2) state.unlocked = 2
+    else if (stage === 3 && state.unlocked < 4) state.unlocked = 4
+  }
 }
 function openSpotDetail(stage, opt) {
   if (!opt.isActive) return
@@ -505,18 +530,22 @@ function closeSpotModal() { state.spotModal = null }
 function confirmSpot() {
   if (!state.spotModal) return
   const { stage, opt } = state.spotModal
+  const sel2     = Array.isArray(state.sel[2]) ? state.sel[2] : []
+  const wasSel2  = stage === 2 && sel2.includes(opt.key)
   closeSpotModal()
   select(stage, opt.key)
-  setTimeout(() => { state.girlExcited = true }, 300)
-  if (stage === 2) {
-    setTimeout(() => {
-      state.modal = {
-        emoji: tr.value.mNoonEmoji,
-        title: tr.value.mNoonTitle,
-        body:  tr.value.mNoonBody,
-        btn:   tr.value.mNoonBtn,
-      }
-    }, 200)
+  if (!wasSel2) {
+    setTimeout(() => { state.girlExcited = true }, 300)
+    if (stage === 2) {
+      setTimeout(() => {
+        state.modal = {
+          emoji: tr.value.mNoonEmoji,
+          title: tr.value.mNoonTitle,
+          body:  tr.value.mNoonBody,
+          btn:   tr.value.mNoonBtn,
+        }
+      }, 200)
+    }
   }
 }
 function prevPhoto() {
@@ -528,8 +557,12 @@ function nextPhoto() {
 }
 
 function makeSpots(stage, arr) {
-  const sel        = state.sel[stage]
   const isUnlocked = state.unlocked >= stage
+  if (stage === 2) {
+    const sel2 = Array.isArray(state.sel[2]) ? state.sel[2] : []
+    return arr.map(o => ({ ...o, isSel: sel2.includes(o.key), isActive: isUnlocked, isDisabled: !isUnlocked }))
+  }
+  const sel = state.sel[stage]
   return arr.map(o => ({ ...o, isSel: sel===o.key, isActive: isUnlocked, isDisabled: !isUnlocked }))
 }
 
@@ -616,6 +649,7 @@ onMounted(() => {
   preloadImages(sceneAssets[1])
   window.addEventListener('resize', updateArrowPos)
   nextTick(updateArrowPos)
+  setTimeout(() => { questVisible.value = true }, 1000)
 })
 
 async function downloadResult() {
@@ -762,7 +796,7 @@ async function downloadResult() {
     <!-- Scene 0 · 出發 -->
     <section :ref="el => { if (el) sceneEls[0] = el }" class="scene">
       <div class="panel-wrap"
-           :style="{ transform:'translate(-50%,-54%)', opacity: state.started ? 0 : 1, transition:'opacity 0.5s ease' }">
+           :style="{ transform:'translate(-50%,-54%)', opacity: state.started ? 0 : questVisible ? 1 : 0, transition:'opacity 0.5s ease' }">
         <div class="panel" style="width:min(600px,88vw)">
           <div class="panel-header">
             <span>🍁</span>
@@ -785,7 +819,7 @@ async function downloadResult() {
         </div>
       </div>
       <!-- Boy (scene 0) -->
-      <div class="scene-0-char" :style="{ opacity: state.started ? 0 : 1, transition:'opacity 0.5s ease' }" aria-hidden="true">
+      <div class="scene-0-char" :style="{ opacity: state.started ? 0 : questVisible ? 1 : 0, transition:'opacity 0.5s ease' }" aria-hidden="true">
         <div class="char-col">
           <div :key="lang + '0'" class="speech-bubble" :ref="el => el && initBubble(el, tr.boyGreet)"></div>
           <div :style="soliScene0Style"></div>
@@ -826,9 +860,9 @@ async function downloadResult() {
         <div class="panel" style="width:min(680px,90vw)">
           <div class="panel-header"><span class="panel-header-text">{{ tr.stop2 }}</span></div>
           <div class="panel-body">
-            <h2 class="pick-title">{{ tr.pick }}</h2>
+            <h2 class="pick-title">{{ tr.pick2 }}</h2>
             <div v-if="state.unlocked < 2" class="locked-msg">{{ tr.locked }}</div>
-            <div v-else class="spots-list">
+            <div v-else class="spots-list spots-list-2col">
               <div v-for="opt in makeSpots(2, S2)" :key="opt.key"
                    class="spot-row"
                    :class="{ 'spot-row-selected':opt.isSel, 'spot-row-active':opt.isActive && !opt.isSel, 'spot-row-disabled':opt.isDisabled }"
@@ -839,7 +873,6 @@ async function downloadResult() {
                   <div class="spot-row-sub">{{ opt.sub }}</div>
                 </div>
                 <span v-if="opt.isSel" class="spot-row-check">✓</span>
-                <span v-else-if="opt.isActive" class="spot-row-arr">›</span>
               </div>
             </div>
             <p class="pick2-note">{{ tr.pick2Note }}</p>
@@ -937,7 +970,11 @@ async function downloadResult() {
           </div>
         </div>
         <div v-if="!state.spotModal.viewOnly" class="spot-popup-footer">
-          <button class="spot-popup-confirm" @click="confirmSpot">{{ tr.confirmPick }}</button>
+          <button class="spot-popup-confirm"
+                  :class="{ 'spot-popup-desel': state.spotModal.stage === 2 && (Array.isArray(state.sel[2]) ? state.sel[2] : []).includes(state.spotModal.opt.key) }"
+                  @click="confirmSpot">
+            {{ state.spotModal.stage === 2 && (Array.isArray(state.sel[2]) ? state.sel[2] : []).includes(state.spotModal.opt.key) ? tr.deselect : tr.confirmPick }}
+          </button>
         </div>
       </div>
     </div>
@@ -1249,6 +1286,19 @@ async function downloadResult() {
   color: #c0392b; font-weight: 600;
   text-shadow: 0 1px 0 rgba(255,255,255,.8);
 }
+.spots-list-2col {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.spots-list-2col .spot-row {
+  flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 12px 8px; gap: 4px; position: relative;
+}
+.spots-list-2col .spot-row-emoji { font-size: 2rem; }
+.spots-list-2col .spot-row-info  { align-items: center; }
+.spots-list-2col .spot-row-check {
+  position: absolute; top: 6px; right: 8px;
+  font-size: 1rem; color: #2f8e3a;
+}
 .locked-msg {
   margin: 10px auto 0; background: rgba(95,69,38,.07);
   border: 2px dashed #bb9560; border-radius: 14px;
@@ -1418,6 +1468,7 @@ async function downloadResult() {
 }
 .spot-popup-confirm:hover  { transform: translateY(-2px); }
 .spot-popup-confirm:active { transform: translateY(1px);  }
+.spot-popup-desel { background: linear-gradient(135deg,#c0392b,#962d22) !important; }
 
 /* ── Generic Modal ───────────────────────────────────────────── */
 .modal-overlay {
