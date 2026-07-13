@@ -143,6 +143,7 @@ const noBtnEl  = ref(null)
 const sceneEls = reactive({})
 let jumpTimer        = null
 let scene4Interval   = null
+let scene4JumpDelay  = null
 let shownResultModal = false
 
 // ─── Computed ─────────────────────────────────────────────────────────────────
@@ -231,11 +232,14 @@ function onWorldScroll(e) {
     state.cur = cur
     triggerJump()
     if (cur === 4) {
-      // slide-in entrance then continuous jump
+      // entrance slide-in, then jump loop starts after animation completes (~1.3s)
       setTimeout(() => { state.scene4Entered = true }, 100)
-      if (!scene4Interval) {
-        scene4Interval = setInterval(() => triggerJump(), 1400)
-      }
+      scene4JumpDelay = setTimeout(() => {
+        if (state.cur === 4 && !scene4Interval) {
+          triggerJump()
+          scene4Interval = setInterval(() => triggerJump(), 1400)
+        }
+      }, 1350)
       if (done.value && !shownResultModal) {
         shownResultModal = true
         setTimeout(() => {
@@ -243,9 +247,11 @@ function onWorldScroll(e) {
             emoji: tr.value.mDoneEmoji, title: tr.value.mDoneTitle,
             body: tr.value.mDoneBody,   btn:   tr.value.mDoneBtn,
           }
-        }, 900)
+        }, 2000)
       }
     } else {
+      clearTimeout(scene4JumpDelay)
+      scene4JumpDelay = null
       clearInterval(scene4Interval)
       scene4Interval = null
       state.scene4Entered = false
@@ -396,7 +402,6 @@ async function downloadResult() {
       <div class="hud-node">
         <img v-if="st.isDone && st.alienImg" :src="st.alienImg" class="hud-alien-img" />
         <div v-else :style="hudCircleStyle(st.isDone)">{{ st.isDone ? '✓' : String(i+1) }}</div>
-        <div class="hud-label">{{ st.label }}</div>
       </div>
       <div v-if="i < steps.length - 1" class="hud-sep"></div>
     </template>
