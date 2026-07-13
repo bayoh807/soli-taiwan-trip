@@ -254,7 +254,7 @@ const S2 = [
   { key:'art',     emoji:'🎨', name:'展覽',
     desc:'台北最精彩的三檔展覽：波特羅、共織宇宙、世界是一片感知的膜，藝術能量滿滿的一天。',
     photos:[ si('s2/art/1.jpg'), si('s2/art/2.jpg'), si('s2/art/3.jpg') ].filter(Boolean),
-    links:['https://www.instagram.com/p/DahwZzNgdGy/', 'https://www.instagram.com/p/DWL0XM8Ep_d/', 'https://www.instagram.com/p/DYt7IqXTEKr/'] },
+    links:['https://www.instagram.com/p/DahwZzNgdGy/?igsh=NzZuajhrZTBxZTl4', 'https://www.instagram.com/reel/DWL0XM8Ep_d/?igsh=MXc1dXRzY2loeDl2eQ==', 'https://www.instagram.com/reel/DYt7IqXTEKr/?igsh=ZWY0ZzJ5OXJheW5x'] },
   { key:'other',   emoji:'🗺️', name:'我有其他想去的地方',
     desc:'有心動的地方嗎？找到之後一定要跟我說喔！不管是夜景、小吃街、特色咖啡廳，Justin 幫你把它排進行程 ✨',
     photos:[ si('s2/other/1.jpg') ].filter(Boolean) },
@@ -743,9 +743,20 @@ let ytPlayer = null
 function initYTPlayer() {
   ytPlayer = new window.YT.Player('yt-bg-player', {
     videoId: 'iqEr3P78fz8',
-    playerVars: { autoplay: 1, loop: 1, playlist: 'iqEr3P78fz8', controls: 0, rel: 0, mute: 0 },
+    playerVars: { autoplay: 1, loop: 1, playlist: 'iqEr3P78fz8', controls: 0, rel: 0, mute: 0, playsinline: 1 },
     events: {
-      onReady(e) { e.target.setVolume(60); e.target.playVideo() },
+      onReady(e) {
+        e.target.setVolume(60)
+        e.target.playVideo()
+        // iOS: unlock audio on first user gesture
+        const unlock = () => {
+          e.target.playVideo()
+          document.removeEventListener('touchend', unlock)
+          document.removeEventListener('click', unlock)
+        }
+        document.addEventListener('touchend', unlock, { once: true })
+        document.addEventListener('click', unlock, { once: true })
+      },
     }
   })
 }
