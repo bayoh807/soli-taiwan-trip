@@ -12,7 +12,13 @@ import alien2     from '../assets/alien-2.png'
 import alien3     from '../assets/alien-3.png'
 
 // ─── i18n ─────────────────────────────────────────────────────────────────────
-const lang  = ref('zh')
+function detectLang() {
+  const bl = (navigator.language || 'zh').toLowerCase()
+  if (bl.startsWith('ko')) return 'kr'
+  if (bl.startsWith('en')) return 'en'
+  return 'zh'
+}
+const lang  = ref(detectLang())
 const LANGS = ['zh', 'en', 'kr']
 const I18N  = {
   zh: {
@@ -88,7 +94,7 @@ function cycleLang() {
   const idx = LANGS.indexOf(lang.value)
   lang.value = LANGS[(idx + 1) % LANGS.length]
 }
-const langLabel = computed(() => ({ zh:'EN', en:'한국어', kr:'繁中' }[lang.value]))
+const langFlag = computed(() => ({ zh:'🇹🇼', en:'🇺🇸', kr:'🇰🇷' }[lang.value]))
 
 // ─── Spot Data ────────────────────────────────────────────────────────────────
 const S1 = [
@@ -118,17 +124,18 @@ const S3 = [
 
 // ─── State ────────────────────────────────────────────────────────────────────
 const state = reactive({
-  started:   false,
-  girlIn:    false,
-  noPos:     null,
-  noSize:    null,
-  unlocked:  0,
-  sel:       {},
-  modal:     null,
-  spotModal: null,
-  cur:       0,
-  jumping:   false,
-  jumpSeq:   0,
+  started:       false,
+  girlIn:        false,
+  noPos:         null,
+  noSize:        null,
+  unlocked:      0,
+  sel:           {},
+  modal:         null,
+  spotModal:     null,
+  cur:           0,
+  jumping:       false,
+  jumpSeq:       0,
+  scene4Entered: false,
 })
 
 const worldEl  = ref(null)
@@ -224,7 +231,8 @@ function onWorldScroll(e) {
     state.cur = cur
     triggerJump()
     if (cur === 4) {
-      // start continuous jump loop for scene 4
+      // slide-in entrance then continuous jump
+      setTimeout(() => { state.scene4Entered = true }, 100)
       if (!scene4Interval) {
         scene4Interval = setInterval(() => triggerJump(), 1400)
       }
@@ -235,11 +243,12 @@ function onWorldScroll(e) {
             emoji: tr.value.mDoneEmoji, title: tr.value.mDoneTitle,
             body: tr.value.mDoneBody,   btn:   tr.value.mDoneBtn,
           }
-        }, 500)
+        }, 900)
       }
     } else {
       clearInterval(scene4Interval)
       scene4Interval = null
+      state.scene4Entered = false
     }
   }
 }
@@ -379,7 +388,7 @@ async function downloadResult() {
   </div>
 
   <!-- ── Language Toggle ──────────────────────────────────────── -->
-  <button class="lang-toggle" @click="cycleLang">{{ langLabel }}</button>
+  <button class="lang-toggle" @click="cycleLang">{{ langFlag }}</button>
 
   <!-- ── Progress HUD ─────────────────────────────────────────── -->
   <div class="hud">
@@ -402,8 +411,16 @@ async function downloadResult() {
 
   <!-- ── Scene 4 dual characters ──────────────────────────────── -->
   <div v-if="state.cur === 4 && state.girlIn" class="scene4-chars" aria-hidden="true">
-    <div :key="state.jumpSeq" :style="spriteStyle"></div>
-    <div :style="soliSpriteStyle"></div>
+    <Transition name="girl4">
+      <div v-if="state.scene4Entered" class="scene4-char-slot">
+        <div :key="state.jumpSeq" :style="spriteStyle"></div>
+      </div>
+    </Transition>
+    <Transition name="boy4">
+      <div v-if="state.scene4Entered" class="scene4-char-slot">
+        <div :style="soliSpriteStyle"></div>
+      </div>
+    </Transition>
   </div>
 
   <!-- ── Nav Arrows ───────────────────────────────────────────── -->
@@ -952,9 +969,24 @@ async function downloadResult() {
 .modal-btn:hover  { transform: translateY(-2px); }
 .modal-btn:active { transform: translateY(1px);  }
 
-/* ── Girl fade-in transition ─────────────────────────────────── */
+/* ── Girl fade-in transition (scenes 1-3) ────────────────────── */
 .fade-girl-enter-active { transition: opacity .8s ease; }
 .fade-girl-enter-from   { opacity: 0; }
+
+/* ── Scene 4 character entrances ─────────────────────────────── */
+.scene4-char-slot { display: flex; align-items: flex-end; }
+
+/* girl: slides in from right, drifts left to position */
+.girl4-enter-active {
+  transition: transform 0.9s cubic-bezier(.15,1.1,.4,1), opacity 0.5s ease;
+}
+.girl4-enter-from { transform: translateX(60vw); opacity: 0; }
+
+/* boy: slides in from right, slightly delayed */
+.boy4-enter-active {
+  transition: transform 0.9s cubic-bezier(.15,1.1,.4,1) 0.28s, opacity 0.5s ease 0.28s;
+}
+.boy4-enter-from { transform: translateX(120vw); opacity: 0; }
 
 /* ── Mobile ──────────────────────────────────────────────────── */
 @media (max-width: 480px) {
