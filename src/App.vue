@@ -83,7 +83,8 @@ function detectLang() {
   if (bl.startsWith('ja')) return 'ja'
   return 'en'
 }
-const lang  = ref(detectLang())
+const lang         = ref(detectLang())
+const downloadState = ref('idle') // 'idle' | 'loading' | 'done'
 const LANGS = ['en', 'kr', 'ja']
 const I18N  = {
   zh: {
@@ -584,6 +585,8 @@ onMounted(() => {
 })
 
 async function downloadResult() {
+  if (downloadState.value !== 'idle') return
+  downloadState.value = 'loading'
   try {
     const canvas = await html2canvas(document.body, {
       useCORS: true,
@@ -600,16 +603,23 @@ async function downloadResult() {
         el.classList?.contains('modal-overlay'),
     })
     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
-    const url  = URL.createObjectURL(blob)
-    const a    = document.createElement('a')
-    a.href = url
-    a.download = 'taiwan-trip.png'
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
+    const file = new File([blob], 'taiwan-trip.png', { type: 'image/png' })
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'Taiwan Trip' })
+    } else {
+      const url = URL.createObjectURL(blob)
+      const a   = document.createElement('a')
+      a.href = url
+      a.download = 'taiwan-trip.png'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    }
+    downloadState.value = 'done'
   } catch(e) {
     console.error('Screenshot failed:', e)
+    downloadState.value = 'idle'
     alert(tr.value.downloadFail)
   }
 }
@@ -836,7 +846,13 @@ async function downloadResult() {
               </div>
             </div>
             <div class="result-actions">
-              <button class="result-btn result-btn-dl" @click="downloadResult">{{ tr.download }}</button>
+              <button class="result-btn result-btn-dl"
+                      :disabled="downloadState !== 'idle'"
+                      :class="{ 'dl-loading': downloadState === 'loading', 'dl-done': downloadState === 'done' }"
+                      @click="downloadResult">
+                <span v-if="downloadState === 'loading'" class="dl-spinner"></span>
+                <template v-else>{{ downloadState === 'done' ? tr.download.replace('📥','✅') : tr.download }}</template>
+              </button>
               <p class="result-hint">{{ tr.downloadHint }}</p>
             </div>
           </div>
@@ -1232,6 +1248,14 @@ async function downloadResult() {
   color: #fff; text-shadow: 0 1px 2px rgba(0,30,10,.4);
   box-shadow: 0 3px 0 #1d5323, 0 6px 14px rgba(0,30,10,.25), inset 0 1px 0 rgba(255,255,255,.5);
 }
+.result-btn-dl:disabled { opacity: .75; cursor: default; transform: none !important; }
+.result-btn-dl.dl-done  { background: linear-gradient(#74c46e,#2d7a2a); }
+.dl-spinner {
+  display: inline-block; width: 17px; height: 17px; vertical-align: middle;
+  border: 3px solid rgba(255,255,255,.35); border-top-color: #fff;
+  border-radius: 50%; animation: dlSpin .65s linear infinite;
+}
+@keyframes dlSpin { to { transform: rotate(360deg); } }
 
 /* ── Spot Popup ──────────────────────────────────────────────── */
 .spot-overlay {
