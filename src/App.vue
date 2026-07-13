@@ -282,13 +282,17 @@ function onYes() {
   }
 }
 function onNo() {
-  const el   = noBtnEl.value
-  const size = state.noSize || (el ? { w:el.offsetWidth, h:el.offsetHeight } : { w:150, h:50 })
-  if (!state.noSize) state.noSize = { ...size }
-  const m = 14
+  const el = noBtnEl.value
+  // always measure fresh so size is accurate
+  const w = (el ? el.offsetWidth  : 0) || 150
+  const h = (el ? el.offsetHeight : 0) || 50
+  if (!state.noSize) state.noSize = { w, h }
+  const m    = 10
+  const maxX = window.innerWidth  - w - m
+  const maxY = window.innerHeight - h - m
   state.noPos = {
-    left: m + Math.random() * Math.max(40, window.innerWidth  - size.w - m*2),
-    top:  m + Math.random() * Math.max(40, window.innerHeight - size.h - m*2),
+    left: Math.floor(m + Math.random() * Math.max(0, maxX - m)),
+    top:  Math.floor(m + Math.random() * Math.max(0, maxY - m)),
   }
 }
 
@@ -385,8 +389,8 @@ async function downloadResult() {
          :style="{ opacity: state.started ? 1 : 0, transition:'opacity 0.8s ease' }" />
   </div>
 
-  <!-- ── Petals ───────────────────────────────────────────────── -->
-  <div class="petals-overlay" aria-hidden="true">
+  <!-- ── Petals (only scene 4) ───────────────────────────────── -->
+  <div v-if="state.cur === 4" class="petals-overlay" aria-hidden="true">
     <div class="petal" style="left:16%;width:10px;height:9px;animation-duration:10s;background:linear-gradient(135deg,#ffb7d2,#ff8fb8)"></div>
     <div class="petal" style="left:42%;width:8px;height:7px;animation-duration:13s;animation-delay:-5s;background:linear-gradient(135deg,#ffcde0,#ffa7c6)"></div>
     <div class="petal" style="left:66%;width:11px;height:10px;animation-duration:11s;animation-delay:-8s;background:linear-gradient(135deg,#ffb7d2,#ff8fb8)"></div>
