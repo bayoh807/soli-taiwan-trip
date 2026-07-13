@@ -11,7 +11,6 @@ import girlSprite from '../assets/girl-sprite.png'
 import alien1     from '../assets/alien-1.png'
 import alien2     from '../assets/alien-2.png'
 import alien3     from '../assets/alien-3.png'
-import tapGif     from '../assets/tap.gif'
 
 // ─── Speech Bubble ────────────────────────────────────────────────────────────
 function SpeechBubble(el, options) {
@@ -1085,12 +1084,13 @@ async function downloadResult() {
               <img :src="state.spotModal.opt.photos[state.spotModal.photoIdx]"
                    class="carousel-img" :class="{ 'carousel-img-loaded': carouselImgLoaded }"
                    @load="carouselImgLoaded = true" @error="carouselImgLoaded = true" alt="" />
-              <!-- Tap hint GIF + link (art spot only) -->
+              <!-- Tap hint + link (art spot only) -->
               <a v-if="state.spotModal.opt.links?.[state.spotModal.photoIdx]"
                  :href="state.spotModal.opt.links[state.spotModal.photoIdx]"
                  target="_blank" rel="noopener noreferrer"
-                 class="carousel-link-badge" @click.stop>
-                <img :src="tapGif" class="tap-gif" alt="" />
+                 class="carousel-link-badge" @click.stop aria-label="查看展覽資訊">
+                <span class="tap-ring"></span>
+                <span class="tap-finger">👆</span>
               </a>
               <button v-if="state.spotModal.photoIdx > 0"
                       class="carousel-arrow carousel-arrow-l" @click.stop="prevPhoto">‹</button>
@@ -1171,18 +1171,31 @@ async function downloadResult() {
 }
 .music-btn:hover { transform: scale(1.1); }
 .carousel-link-badge {
-  position: absolute; top: 6px; left: 6px;
-  width: 56px; height: 56px;
+  position: absolute; top: 8px; left: 8px;
+  width: 52px; height: 52px;
   display: flex; align-items: center; justify-content: center;
   text-decoration: none; z-index: 5;
-  transition: transform .14s ease;
 }
-.carousel-link-badge:hover { transform: scale(1.1); }
-.tap-gif {
-  width: 100%; height: 100%;
-  object-fit: contain;
-  mix-blend-mode: multiply;
-  pointer-events: none;
+.tap-ring {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 2.5px solid rgba(255,255,255,.85);
+  box-shadow: 0 0 0 1.5px rgba(0,0,0,.15);
+  animation: tapRing 1.7s ease-out infinite;
+}
+.tap-finger {
+  font-size: 28px; line-height: 1;
+  animation: tapBounce 1.7s ease-in-out infinite;
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,.5));
+}
+@keyframes tapRing {
+  0%   { transform: scale(.5); opacity: 1; }
+  75%  { transform: scale(1.7); opacity: 0; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+@keyframes tapBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  30%       { transform: translateY(6px) scale(.9); }
+  55%       { transform: translateY(0) scale(1.08); }
 }
 .lang-bar {
   position: fixed;
