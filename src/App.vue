@@ -670,7 +670,7 @@ async function downloadResult() {
     <Transition name="girl4">
       <div v-if="state.scene4Entered" class="scene4-char-slot">
         <div ref="scene4GirlColRef" class="char-col">
-          <div :key="lang + '4g'" class="speech-bubble" :ref="el => el && initBubble(el, [tr.girl4Bubble])"></div>
+          <div :key="lang + '4g'" class="speech-bubble" :ref="el => el && initBubble(el, [tr.girl4Bubble], { startDelay: 1350 })"></div>
           <div :key="state.jumpSeq" :style="scene4SpriteFrameStyle"></div>
         </div>
       </div>
@@ -678,7 +678,7 @@ async function downloadResult() {
     <Transition name="boy4">
       <div v-if="state.scene4Entered" class="scene4-char-slot">
         <div class="char-col">
-          <div :key="lang + '4b'" class="speech-bubble" :ref="el => el && initBubble(el, [tr.boy4Bubble])"></div>
+          <div :key="lang + '4b'" class="speech-bubble" :ref="el => el && initBubble(el, [tr.boy4Bubble], { startDelay: 1700 })"></div>
           <div :style="soliSpriteStyle"></div>
         </div>
       </div>
