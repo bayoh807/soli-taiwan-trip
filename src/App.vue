@@ -1445,12 +1445,7 @@ async function downloadResult() {
 
 /* ── Scene 4 character entrances ─────────────────────────────── */
 .scene4-char-slot { display: flex; align-items: flex-end; }
-.scene4-chars .char-col { position: relative; }
-.scene4-chars .speech-bubble {
-  position: absolute; bottom: 100%; left: 50%;
-  transform: translateX(-50%); margin-bottom: 4px;
-  max-width: min(44vw, 230px);
-}
+.scene4-chars .speech-bubble { max-width: min(44vw, 230px); }
 
 .girl4-enter-active {
   transition: transform 0.9s cubic-bezier(.15,1.1,.4,1), opacity 0.5s ease;
