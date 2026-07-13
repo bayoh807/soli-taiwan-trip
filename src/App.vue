@@ -147,7 +147,7 @@ const I18N  = {
     girl2Pre:'Where shall we explore?',          girl2Post:"Let's go! Let's go!",
     girl3Pre:"What's the plan for tonight?",     girl3Post:'❤️',
     girl4Bubble:'So happy!',
-    boy4Bubble:"I can't wait to hang out with you!",
+    boy4Bubble:"Can't wait to see you!",
   },
   kr: {
     depart:'출발', am:'아침', noon:'점심', pm:'저녁',
@@ -300,6 +300,7 @@ let jumpTimer        = null
 let scene4Interval   = null
 let scene4JumpDelay  = null
 let shownResultModal = false
+let scene4Blob       = null  // pre-generated screenshot blob
 
 // ─── Computed ─────────────────────────────────────────────────────────────────
 const sceneCount   = computed(() => state.unlocked >= 4 ? 5 : 4)
@@ -575,6 +576,28 @@ const sceneAssets = [
 watch(() => state.cur, (cur) => {
   const next = cur + 1
   if (sceneAssets[next]?.length) preloadImages(sceneAssets[next])
+  if (cur === 4) {
+    scene4Blob = null
+    // Pre-generate screenshot after all animations settle (~3.5s)
+    setTimeout(async () => {
+      if (state.cur !== 4) return
+      try {
+        const c = await html2canvas(document.body, {
+          useCORS: true,
+          scale: Math.min(window.devicePixelRatio || 2, 2),
+          width: window.innerWidth, height: window.innerHeight,
+          x: 0, y: 0, scrollX: 0, scrollY: 0,
+          windowWidth: window.innerWidth, windowHeight: window.innerHeight,
+          ignoreElements: el =>
+            el.classList?.contains('spot-overlay') ||
+            el.classList?.contains('modal-overlay'),
+        })
+        scene4Blob = await new Promise((res, rej) =>
+          c.toBlob(b => b ? res(b) : rej(new Error('toBlob null')), 'image/png')
+        )
+      } catch (e) { console.warn('Pre-gen screenshot failed:', e) }
+    }, 3500)
+  }
 })
 
 onMounted(() => {
@@ -588,20 +611,26 @@ async function downloadResult() {
   if (downloadState.value !== 'idle') return
   downloadState.value = 'loading'
   try {
-    const canvas = await html2canvas(document.body, {
-      useCORS: true,
-      scale: Math.min(window.devicePixelRatio || 2, 2),
-      width:  window.innerWidth,
-      height: window.innerHeight,
-      x: 0, y: 0,
-      scrollX: 0, scrollY: 0,
-      windowWidth:  window.innerWidth,
-      windowHeight: window.innerHeight,
-      ignoreElements: el =>
-        el.classList?.contains('spot-overlay') ||
-        el.classList?.contains('modal-overlay'),
-    })
-    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
+    // Use pre-generated blob if ready (avoids iOS user-gesture timeout)
+    let blob = scene4Blob
+    if (!blob) {
+      const canvas = await html2canvas(document.body, {
+        useCORS: true,
+        scale: Math.min(window.devicePixelRatio || 2, 2),
+        width:  window.innerWidth,
+        height: window.innerHeight,
+        x: 0, y: 0,
+        scrollX: 0, scrollY: 0,
+        windowWidth:  window.innerWidth,
+        windowHeight: window.innerHeight,
+        ignoreElements: el =>
+          el.classList?.contains('spot-overlay') ||
+          el.classList?.contains('modal-overlay'),
+      })
+      blob = await new Promise((res, rej) =>
+        canvas.toBlob(b => b ? res(b) : rej(new Error('toBlob null')), 'image/png')
+      )
+    }
     const file = new File([blob], 'taiwan-trip.png', { type: 'image/png' })
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       try {
@@ -1004,8 +1033,8 @@ async function downloadResult() {
   bottom: calc(max(12px, env(safe-area-inset-bottom)) + 4px);
   z-index: 15; pointer-events: none;
   display: flex; align-items: flex-end; justify-content: center;
-  gap: clamp(40px, 8vw, 80px);
-  width: clamp(280px, 38vw, 420px);
+  gap: clamp(20px, 6vw, 60px);
+  width: min(96vw, 560px);
 }
 .scene-0-char {
   position: fixed; left: 50%; transform: translateX(-50%);
@@ -1395,6 +1424,7 @@ async function downloadResult() {
 .scene4-chars .speech-bubble {
   position: absolute; bottom: 100%; left: 50%;
   transform: translateX(-50%); margin-bottom: 4px;
+  max-width: min(44vw, 230px);
 }
 
 .girl4-enter-active {
