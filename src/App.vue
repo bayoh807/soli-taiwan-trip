@@ -272,11 +272,11 @@ const S3 = [
       'https://picsum.photos/seed/shilin1/480/280',
       'https://picsum.photos/seed/shilin2/480/280',
     ]},
-  { key:'yuanshan',emoji:'🎪', name:'圓山麻吉市集', sub:'YUANSHAN MARKET',
-    desc:'結合文青、美食與設計的特色市集，在圓山美麗殿旁享受一個輕鬆悠閒的台灣夜晚。',
+  { key:'dadaocheng',emoji:'🏮', name:'大稻埕夜市', sub:'DADAOCHENG MARKET',
+    desc:'百年迪化街旁的老台北夜市，融合南北雜貨、古早味小吃與文青選品，全年都開、夜晚最美。',
     photos:[
-      'https://picsum.photos/seed/yuanshan1/480/280',
-      'https://picsum.photos/seed/yuanshan2/480/280',
+      'https://picsum.photos/seed/dadao1/480/280',
+      'https://picsum.photos/seed/dadao2/480/280',
     ]},
 ]
 
@@ -827,7 +827,6 @@ async function downloadResult() {
           <div class="panel-header"><span class="panel-header-text">{{ tr.stop2 }}</span></div>
           <div class="panel-body">
             <h2 class="pick-title">{{ tr.pick }}</h2>
-            <p class="pick2-note">{{ tr.pick2Note }}</p>
             <div v-if="state.unlocked < 2" class="locked-msg">{{ tr.locked }}</div>
             <div v-else class="spots-list">
               <div v-for="opt in makeSpots(2, S2)" :key="opt.key"
@@ -843,6 +842,7 @@ async function downloadResult() {
                 <span v-else-if="opt.isActive" class="spot-row-arr">›</span>
               </div>
             </div>
+            <p class="pick2-note">{{ tr.pick2Note }}</p>
           </div>
         </div>
       </div>
@@ -1245,8 +1245,9 @@ async function downloadResult() {
   text-shadow: 0 1px 0 rgba(255,255,255,.8);
 }
 .pick2-note {
-  margin: -6px 0 10px; font-size: clamp(11px,2.8vw,13px);
+  margin: 10px 0 0; font-size: clamp(17px,4vw,24px);
   color: #c0392b; font-weight: 600;
+  text-shadow: 0 1px 0 rgba(255,255,255,.8);
 }
 .locked-msg {
   margin: 10px auto 0; background: rgba(95,69,38,.07);
