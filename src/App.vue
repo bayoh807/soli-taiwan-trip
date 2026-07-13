@@ -11,6 +11,7 @@ import girlSprite from '../assets/girl-sprite.png'
 import alien1     from '../assets/alien-1.png'
 import alien2     from '../assets/alien-2.png'
 import alien3     from '../assets/alien-3.png'
+import tapGif     from '../assets/tap.gif'
 
 // ─── Speech Bubble ────────────────────────────────────────────────────────────
 function SpeechBubble(el, options) {
@@ -1084,13 +1085,12 @@ async function downloadResult() {
               <img :src="state.spotModal.opt.photos[state.spotModal.photoIdx]"
                    class="carousel-img" :class="{ 'carousel-img-loaded': carouselImgLoaded }"
                    @load="carouselImgLoaded = true" @error="carouselImgLoaded = true" alt="" />
-              <!-- Link badge + tap hint (art spot only) -->
+              <!-- Tap hint GIF + link (art spot only) -->
               <a v-if="state.spotModal.opt.links?.[state.spotModal.photoIdx]"
                  :href="state.spotModal.opt.links[state.spotModal.photoIdx]"
                  target="_blank" rel="noopener noreferrer"
                  class="carousel-link-badge" @click.stop>
-                <span class="tap-pulse"></span>
-                🔗
+                <img :src="tapGif" class="tap-gif" alt="" />
               </a>
               <button v-if="state.spotModal.photoIdx > 0"
                       class="carousel-arrow carousel-arrow-l" @click.stop="prevPhoto">‹</button>
@@ -1171,24 +1171,18 @@ async function downloadResult() {
 }
 .music-btn:hover { transform: scale(1.1); }
 .carousel-link-badge {
-  position: absolute; top: 10px; left: 10px;
-  width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(255,255,255,.92);
+  position: absolute; top: 6px; left: 6px;
+  width: 56px; height: 56px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 18px; text-decoration: none; z-index: 5;
-  box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  text-decoration: none; z-index: 5;
   transition: transform .14s ease;
 }
-.carousel-link-badge:hover { transform: scale(1.12); }
-.tap-pulse {
-  position: absolute; inset: 0; border-radius: 50%;
-  background: rgba(201,150,46,.35);
-  animation: tapPulse 1.6s ease-out infinite;
-}
-@keyframes tapPulse {
-  0%   { transform: scale(1); opacity: .7; }
-  70%  { transform: scale(1.9); opacity: 0; }
-  100% { transform: scale(1.9); opacity: 0; }
+.carousel-link-badge:hover { transform: scale(1.1); }
+.tap-gif {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  pointer-events: none;
 }
 .lang-bar {
   position: fixed;
