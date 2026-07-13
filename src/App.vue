@@ -251,8 +251,8 @@ const S2 = [
   { key:'danshui', emoji:'🌅', name:'淡水老街',
     desc:'淡水河口的百年老街，吃阿給、鐵蛋配河岸夕陽，是台北近郊最輕鬆寫意的午後散策。',
     photos:[ si('s2/danshui/1.jpg'), si('s2/danshui/2.jpg'), si('s2/danshui/3.jpg') ].filter(Boolean) },
-  { key:'art',     emoji:'☕', name:'藝術展',
-    desc:'台北特色選品藝術展，逛展後走進旁邊的獨立咖啡廳發呆，享受最有質感的台北午後時光。',
+  { key:'art',     emoji:'🎨', name:'展覽',
+    desc:'台北最精彩的三檔展覽：波特羅、共織宇宙、世界是一片感知的膜，藝術能量滿滿的一天。',
     photos:[ si('s2/art/1.jpg'), si('s2/art/2.jpg'), si('s2/art/3.jpg') ].filter(Boolean) },
   { key:'other',   emoji:'🗺️', name:'我有其他想去的地方',
     desc:'有心動的地方嗎？找到之後一定要跟我說喔！不管是夜景、小吃街、特色咖啡廳，Justin 幫你把它排進行程 ✨',
@@ -308,9 +308,9 @@ const SPOT_L10N = {
     ja: { name: '淡水老街', desc: '淡水河沿いの百年の老街。阿給や鉄卵を食べながら台北近郊で最も美しい夕日を眺める、気ままな午後の散策。' },
   },
   art: {
-    en: { name: 'Art Exhibition', desc: 'Explore Taipei\'s coolest curated art shows, then drift into an indie café nearby for the most stylish afternoon in the city.' },
-    kr: { name: '아트 전시회', desc: '타이베이의 트렌디한 아트 전시를 감상하고, 바로 옆 독립 카페에서 여유로운 시간을 보내는, 가장 감각적인 타이베이 오후.' },
-    ja: { name: 'アート展示会', desc: '台北の個性的なアート展を楽しんだ後、隣のインディーカフェでぼんやり過ごす、最もスタイリッシュな台北の午後。' },
+    en: { name: 'Exhibitions', desc: 'Three unmissable Taipei shows: Botero, Weaving the Cosmos, and The World is a Membrane of Perception — an art-packed day unlike any other.' },
+    kr: { name: '전시회', desc: '타이베이 최고의 세 전시: 보테로, 우주를 짜다, 세계는 지각의 막 — 예술로 가득 찬 하루.' },
+    ja: { name: '展覧会', desc: '台北で見逃せない三つの展示：ボテロ、宇宙を織る、知覚の膜としての世界 — アートに満ちた特別な一日。' },
   },
   other: {
     en: { name: 'I have somewhere in mind', desc: 'Have a place that caught your eye? Find it and make sure to tell me — whether it\'s a scenic spot, a food street, or a hidden café, Justin will make it happen ✨' },
@@ -1499,7 +1499,7 @@ async function downloadResult() {
   background: #e8dfc4;
 }
 .carousel-img {
-  display: block; width: 100%; height: clamp(140px, 36vw, 220px);
+  display: block; width: 100%; height: clamp(200px, 52vw, 300px);
   object-fit: cover; border-radius: 12px;
 }
 .carousel-arrow {
