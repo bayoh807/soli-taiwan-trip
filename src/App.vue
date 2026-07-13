@@ -743,16 +743,30 @@ let ytPlayer = null
 function initYTPlayer() {
   ytPlayer = new window.YT.Player('yt-bg-player', {
     videoId: 'iqEr3P78fz8',
-    playerVars: { autoplay: 1, loop: 1, playlist: 'iqEr3P78fz8', controls: 0, rel: 0, mute: 0, playsinline: 1 },
+    playerVars: { autoplay: 1, loop: 1, playlist: 'iqEr3P78fz8', controls: 0, rel: 0, mute: 1, playsinline: 1 },
     events: {
       onReady(e) {
         e.target.setVolume(60)
         e.target.playVideo()
-        // iOS: unlock audio on first user gesture
+        // iOS resize trick: nudge an on-screen element to trigger autoplay unlock
+        requestAnimationFrame(() => {
+          const hud = document.querySelector('.hud')
+          if (hud) {
+            hud.style.width = (hud.offsetWidth + 1) + 'px'
+            requestAnimationFrame(() => {
+              hud.style.width = ''
+              if (!bgMuted.value) e.target.unMute()
+              e.target.playVideo()
+            })
+          } else {
+            if (!bgMuted.value) e.target.unMute()
+            e.target.playVideo()
+          }
+        })
+        // fallback: first user gesture
         const unlock = () => {
+          if (!bgMuted.value) e.target.unMute()
           e.target.playVideo()
-          document.removeEventListener('touchend', unlock)
-          document.removeEventListener('click', unlock)
         }
         document.addEventListener('touchend', unlock, { once: true })
         document.addEventListener('click', unlock, { once: true })
@@ -854,7 +868,7 @@ async function downloadResult() {
   </div>
 
   <!-- ── YouTube BG Player ────────────────────────────────────── -->
-  <div style="position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden;left:-9999px">
+  <div style="position:fixed;width:1px;height:1px;opacity:0.01;pointer-events:none;overflow:hidden;bottom:0;right:0;z-index:-1">
     <div id="yt-bg-player"></div>
   </div>
 
@@ -1235,7 +1249,7 @@ async function downloadResult() {
 /* ── Progress HUD ────────────────────────────────────────────── */
 .hud {
   position: fixed;
-  top: max(22px, calc(env(safe-area-inset-top) + 10px));
+  top: max(23px, calc(env(safe-area-inset-top) + 10px));
   left: 50%;
   transform: translateX(-50%);
   z-index: 60;
