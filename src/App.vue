@@ -590,7 +590,6 @@ async function downloadResult() {
   try {
     const canvas = await html2canvas(document.body, {
       useCORS: true,
-      allowTaint: true,
       scale: Math.min(window.devicePixelRatio || 2, 2),
       width:  window.innerWidth,
       height: window.innerHeight,
@@ -605,7 +604,14 @@ async function downloadResult() {
     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
     const file = new File([blob], 'taiwan-trip.png', { type: 'image/png' })
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ files: [file], title: 'Taiwan Trip' })
+      try {
+        await navigator.share({ files: [file], title: 'Taiwan Trip' })
+        downloadState.value = 'done'
+      } catch (shareErr) {
+        // AbortError = user dismissed share sheet — not a failure
+        downloadState.value = shareErr.name === 'AbortError' ? 'idle' : 'idle'
+        if (shareErr.name !== 'AbortError') alert(tr.value.downloadFail)
+      }
     } else {
       const url = URL.createObjectURL(blob)
       const a   = document.createElement('a')
@@ -615,8 +621,8 @@ async function downloadResult() {
       a.click()
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
+      downloadState.value = 'done'
     }
-    downloadState.value = 'done'
   } catch(e) {
     console.error('Screenshot failed:', e)
     downloadState.value = 'idle'
@@ -1385,6 +1391,11 @@ async function downloadResult() {
 
 /* ── Scene 4 character entrances ─────────────────────────────── */
 .scene4-char-slot { display: flex; align-items: flex-end; }
+.scene4-chars .char-col { position: relative; }
+.scene4-chars .speech-bubble {
+  position: absolute; bottom: 100%; left: 50%;
+  transform: translateX(-50%); margin-bottom: 4px;
+}
 
 .girl4-enter-active {
   transition: transform 0.9s cubic-bezier(.15,1.1,.4,1), opacity 0.5s ease;
