@@ -96,7 +96,6 @@ const I18N  = {
     yesBtn:'YES 出發！', noBtn:'NO 再想想',
     pick:'選一個地點展開探索', pickLast:'選一個地點完成旅程',
     pick2:'選 1-2 個地點（可複選，最多 2 個）',
-    pick2Note:'下午的行程想混搭的話跟我說喔',
     deselect:'取消選擇',
     locked1:'🔒 先回到起點回答問題，即可解鎖',
     locked:'🔒 完成上一站，解鎖此地點',
@@ -130,7 +129,6 @@ const I18N  = {
     yesBtn:"YES, Let's Go!", noBtn:'NO, hmm...',
     pick:'Choose a destination', pickLast:'Choose your final stop',
     pick2:'Choose 1-2 destinations (up to 2)',
-    pick2Note:'下午的行程想混搭的話跟我說喔',
     deselect:'Deselect',
     locked1:'🔒 Go back to start to unlock',
     locked:'🔒 Complete the previous stop first',
@@ -164,7 +162,6 @@ const I18N  = {
     yesBtn:'YES, 출발!', noBtn:'NO, 글쎄...',
     pick:'목적지를 선택하세요', pickLast:'마지막 목적지를 선택하세요',
     pick2:'목적지 1-2개 선택 (최대 2개)',
-    pick2Note:'下午的行程想混搭的話跟我說喔',
     deselect:'선택 취소',
     locked1:'🔒 시작 지점으로 돌아가서 잠금 해제',
     locked:'🔒 이전 단계를 완료해야 합니다',
@@ -198,7 +195,6 @@ const I18N  = {
     yesBtn:'YES 出発！', noBtn:'NO まだかな…',
     pick:'目的地を選ぼう', pickLast:'最後の場所を選ぼう',
     pick2:'目的地を1-2つ選ぼう（最大2つ）',
-    pick2Note:'下午的行程想混搭的話跟我說喔',
     deselect:'選択解除',
     locked1:'🔒 最初に戻って質問に答えてね',
     locked:'🔒 前のステージをクリアしてね',
@@ -226,67 +222,126 @@ const I18N  = {
 }
 const tr = computed(() => I18N[lang.value] ?? I18N.en)
 
+// ─── Spot Images (Vite glob — auto-picks up downloaded files) ────────────────
+const _imgs = import.meta.glob('../assets/s*/**/*.{jpg,jpeg,png}', { eager: true, import: 'default' })
+function si(path) { return _imgs[`../assets/${path}`] || null }
+
 // ─── Spot Data ────────────────────────────────────────────────────────────────
 const S1 = [
-  { key:'dadaocheng1', emoji:'👘', name:'大稻埕', sub:'QIPAO & OLD STREET',
+  { key:'dadaocheng1', emoji:'👘', name:'大稻埕',
     desc:'百年迪化街漫步，在專業師傅的旗袍店挑選一套屬於你的旗袍，穿著它拍下最美的台灣記憶。',
-    photos:[
-      'https://picsum.photos/seed/dada1a/480/280',
-      'https://picsum.photos/seed/dada1b/480/280',
-    ]},
-  { key:'palace',  emoji:'🏛️', name:'故宮博物院', sub:'NATIONAL MUSEUM',
+    photos:[ si('s1/dadaocheng/1.jpg'), si('s1/dadaocheng/2.jpg'), si('s1/dadaocheng/3.jpg') ].filter(Boolean) },
+  { key:'palace',  emoji:'🏛️', name:'故宮博物院',
     desc:'珍藏全球最豐富的中華文物，翠玉白菜、肉形石等鎮館之寶，走進五千年文明史。',
-    photos:[
-      'https://picsum.photos/seed/palace1/480/280',
-      'https://picsum.photos/seed/palace2/480/280',
-    ]},
-  { key:'101',     emoji:'🏙️', name:'台北 101',  sub:'SKYLINE TOWER',
+    photos:[ si('s1/palace/1.jpg'), si('s1/palace/2.jpg'), si('s1/palace/3.jpg') ].filter(Boolean) },
+  { key:'101',     emoji:'🏙️', name:'台北 101',
     desc:'508 公尺的世界地標，頂樓觀景台 360° 俯瞰台北全景，日夜各有絕美風貌。',
-    photos:[
-      'https://picsum.photos/seed/tp101a/480/280',
-      'https://picsum.photos/seed/tp101b/480/280',
-    ]},
+    photos:[ si('s1/101/1.jpg'), si('s1/101/2.jpg'), si('s1/101/3.jpg') ].filter(Boolean) },
 ]
 const S2 = [
-  { key:'shifen',   emoji:'💧', name:'十分瀑布 + 平溪', sub:'WATERFALL & LANTERNS',
+  { key:'shifen',   emoji:'💧', name:'十分瀑布 + 平溪',
     desc:'台灣版尼加拉瀑布壯觀雄渾，平溪老街放天燈許願，是山林間最浪漫的半日遊。',
-    photos:[
-      'https://picsum.photos/seed/shifen1/480/280',
-      'https://picsum.photos/seed/shifen2/480/280',
-    ]},
-  { key:'houtong', emoji:'🐱', name:'猴硐貓村 + 野柳女王頭', sub:'CATS & GEOLOGY',
-    desc:'猴硐是全台最著名的貓村，野柳女王頭則是大自然雕刻的地質奇觀，兩地合搭超值。',
-    photos:[
-      'https://picsum.photos/seed/houtong1/480/280',
-      'https://picsum.photos/seed/houtong2/480/280',
-    ]},
-  { key:'art',     emoji:'☕', name:'藝術展 + 咖啡廳',   sub:'ART & CAFÉ',
-    desc:'台北特色選品藝術展，逛展後走進旁邊的獨立咖啡廳發呆。點擊圖片可查看活動詳情。',
-    photos:[
-      'https://picsum.photos/seed/art1/480/280',
-      'https://picsum.photos/seed/art2/480/280',
-    ]},
+    photos:[ si('s2/shifen/1.jpg'), si('s2/shifen/2.jpg'), si('s2/shifen/3.jpg') ].filter(Boolean) },
+  { key:'jiufen',  emoji:'🏘️', name:'九份老街',
+    desc:'依山傍海的百年礦業聚落，蜿蜒石階巷弄、紅燈籠倒映雨霧，是台灣最具代表性的懷舊風景。',
+    photos:[ si('s2/jiufen/1.jpg'), si('s2/jiufen/2.jpg'), si('s2/jiufen/3.jpg') ].filter(Boolean) },
+  { key:'houtong', emoji:'🐱', name:'猴硐貓村',
+    desc:'全台最著名的貓咪聚落，到處都是慵懶的貓咪迎客，是愛貓人士絕對不能錯過的療癒景點。',
+    photos:[ si('s2/houtong/1.jpg'), si('s2/houtong/2.jpg'), si('s2/houtong/3.jpg') ].filter(Boolean) },
+  { key:'danshui', emoji:'🌅', name:'淡水老街',
+    desc:'淡水河口的百年老街，吃阿給、鐵蛋配河岸夕陽，是台北近郊最輕鬆寫意的午後散策。',
+    photos:[ si('s2/danshui/1.jpg'), si('s2/danshui/2.jpg'), si('s2/danshui/3.jpg') ].filter(Boolean) },
+  { key:'art',     emoji:'☕', name:'藝術展',
+    desc:'台北特色選品藝術展，逛展後走進旁邊的獨立咖啡廳發呆，享受最有質感的台北午後時光。',
+    photos:[ si('s2/art/1.jpg'), si('s2/art/2.jpg'), si('s2/art/3.jpg') ].filter(Boolean) },
+  { key:'other',   emoji:'🗺️', name:'我有其他想去的地方',
+    desc:'有心動的地方嗎？找到之後一定要跟我說喔！不管是夜景、小吃街、特色咖啡廳，Justin 幫你把它排進行程 ✨',
+    photos:[ si('s2/other/1.jpg') ].filter(Boolean) },
 ]
 const S3 = [
-  { key:'raohe',   emoji:'🏮', name:'饒河街夜市', sub:'RAOHE NIGHT MARKET',
+  { key:'raohe',   emoji:'🏮', name:'饒河街夜市',
     desc:'百年歷史的老牌夜市，胡椒餅、藥燉排骨飄香，在廟宇前品嚐最道地的台北滋味。',
-    photos:[
-      'https://picsum.photos/seed/raohe1/480/280',
-      'https://picsum.photos/seed/raohe2/480/280',
-    ]},
-  { key:'shilin',  emoji:'🍢', name:'士林夜市',  sub:'SHILIN NIGHT MARKET',
+    photos:[ si('s3/raohe/1.jpg'), si('s3/raohe/2.jpg'), si('s3/raohe/3.jpg') ].filter(Boolean) },
+  { key:'shilin',  emoji:'🍢', name:'士林夜市',
     desc:'台灣最大最知名的夜市，豪大大雞排、鹹酥雞、草莓泡泡冰，每樣都讓你難以抗拒。',
-    photos:[
-      'https://picsum.photos/seed/shilin1/480/280',
-      'https://picsum.photos/seed/shilin2/480/280',
-    ]},
-  { key:'dadaocheng',emoji:'🧧', name:'大稻埕夜市', sub:'DADAOCHENG MARKET',
-    desc:'百年迪化街旁的老台北夜市，融合南北雜貨、古早味小吃與文青選品，全年都開、夜晚最美。',
-    photos:[
-      'https://picsum.photos/seed/dadao1/480/280',
-      'https://picsum.photos/seed/dadao2/480/280',
-    ]},
+    photos:[ si('s3/shilin/1.jpg'), si('s3/shilin/2.jpg'), si('s3/shilin/3.jpg') ].filter(Boolean) },
+  { key:'ningxia',   emoji:'🧧', name:'寧夏夜市',
+    desc:'台北最受在地人喜愛的傳統夜市，蚵仔煎、蔥肉餅、天婦羅樣樣道地，密度高、氣氛熱鬧，吃完保證滿足。',
+    photos:[ si('s3/ningxia/1.jpg'), si('s3/ningxia/2.jpg'), si('s3/ningxia/3.jpg') ].filter(Boolean) },
 ]
+
+// ─── Spot i18n ────────────────────────────────────────────────────────────────
+const SPOT_L10N = {
+  dadaocheng1: {
+    en: { name: 'Dadaocheng', desc: 'Stroll through century-old Dihua Street, pick a custom qipao at a master tailor\'s shop, and capture your most beautiful Taiwan memories wearing it.' },
+    kr: { name: '다다오청', desc: '100년 역사의 디화제를 산책하며, 전문 장인의 가게에서 나만의 치파오를 골라 입고 아름다운 대만의 추억을 담아보세요.' },
+    ja: { name: '大稻埕', desc: '100年の歴史を持つ迪化街を散策し、職人のお店でチャイナドレスを一着選んで、最高の台湾の思い出を作ろう。' },
+  },
+  palace: {
+    en: { name: 'National Palace Museum', desc: 'Home to the world\'s richest collection of Chinese artifacts — the iconic Jadeite Cabbage, the Meat-shaped Stone — stepping inside is stepping into 5,000 years of civilization.' },
+    kr: { name: '국립고궁박물원', desc: '세계 최고의 중화 문물 컬렉션. 취옥 배추와 육형석 등 국보를 만나며 5천 년 문명의 역사 속으로 들어가보세요.' },
+    ja: { name: '国立故宮博物院', desc: '翠玉白菜、肉形石など至宝に出会いながら、世界最高峰の中国文物コレクションで5000年の歴史を体感しよう。' },
+  },
+  '101': {
+    en: { name: 'Taipei 101', desc: 'The iconic 508-meter skyscraper offers a breathtaking 360° view of Taipei from its observation deck — stunning by day and magical at night.' },
+    kr: { name: '타이베이 101', desc: '508미터의 랜드마크에서 360° 파노라마로 타이베이 전경을 감상하세요. 낮과 밤 모두 환상적인 경치를 자랑합니다.' },
+    ja: { name: '台北101', desc: '高さ508メートルの世界的ランドマーク。展望台から台北を360°見渡せる絶景は、昼も夜も格別の美しさ。' },
+  },
+  shifen: {
+    en: { name: 'Shifen Waterfall + Pingxi', desc: 'Taiwan\'s very own Niagara Falls thunders with raw power. Release a sky lantern at Pingxi Old Street and let your wishes float away into the mountain air.' },
+    kr: { name: '스펀 폭포 + 핑시', desc: '대만의 나이아가라 폭포라 불리는 장대한 스펀 폭포와, 핑시 올드 스트리트에서 소원 풍등 날리기 — 가장 낭만적인 반나절 여행.' },
+    ja: { name: '十分滝 + 平溪', desc: '台湾のナイアガラと呼ばれる十分滝の迫力を体感し、平溪老街でランタンに願いを込めて空へ飛ばそう。' },
+  },
+  jiufen: {
+    en: { name: 'Jiufen Old Street', desc: 'A century-old mining village perched between mountains and sea. Winding stone steps, glowing red lanterns in the mist — the most iconic nostalgic scenery in Taiwan.' },
+    kr: { name: '지우펀 올드 스트리트', desc: '산과 바다 사이에 자리한 100년 광산 마을. 구불구불한 돌계단과 빗속에 붉게 빛나는 홍등이 어우러진, 대만에서 가장 낭만적인 풍경.' },
+    ja: { name: '九份老街', desc: '山と海に挟まれた百年の鉱山集落。石段の路地と霧の中に輝く赤いランタンが織りなす、台湾一ノスタルジックな風景。' },
+  },
+  houtong: {
+    en: { name: 'Houtong Cat Village', desc: 'Taiwan\'s most famous cat haven — laid-back kitties greet you around every corner. A must-visit for all cat lovers.' },
+    kr: { name: '허우통 고양이 마을', desc: '대만 최고의 고양이 마을. 느긋한 고양이들이 곳곳에서 반겨주는, 고양이를 사랑한다면 절대 놓칠 수 없는 힐링 명소.' },
+    ja: { name: '猴硐猫村', desc: '台湾一有名な猫の村。のんびりした猫たちがあちこちで出迎えてくれる、猫好きなら絶対に外せない癒しスポット。' },
+  },
+  danshui: {
+    en: { name: 'Danshui Old Street', desc: 'A century-old riverside street where you snack on agei and iron eggs while watching the most beautiful sunset in Taipei — the perfect lazy afternoon.' },
+    kr: { name: '단수이 올드 스트리트', desc: '타이베이 근교의 백년 올드 스트리트. 아게이와 철란을 먹으며 강가 석양을 바라보는, 가장 여유로운 오후 산책.' },
+    ja: { name: '淡水老街', desc: '淡水河沿いの百年の老街。阿給や鉄卵を食べながら台北近郊で最も美しい夕日を眺める、気ままな午後の散策。' },
+  },
+  art: {
+    en: { name: 'Art Exhibition', desc: 'Explore Taipei\'s coolest curated art shows, then drift into an indie café nearby for the most stylish afternoon in the city.' },
+    kr: { name: '아트 전시회', desc: '타이베이의 트렌디한 아트 전시를 감상하고, 바로 옆 독립 카페에서 여유로운 시간을 보내는, 가장 감각적인 타이베이 오후.' },
+    ja: { name: 'アート展示会', desc: '台北の個性的なアート展を楽しんだ後、隣のインディーカフェでぼんやり過ごす、最もスタイリッシュな台北の午後。' },
+  },
+  other: {
+    en: { name: 'I have somewhere in mind', desc: 'Have a place that caught your eye? Find it and make sure to tell me — whether it\'s a scenic spot, a food street, or a hidden café, Justin will make it happen ✨' },
+    kr: { name: '다른 가고 싶은 곳이 있어요', desc: '마음에 드는 곳이 있나요? 찾아보고 꼭 알려주세요! 야경, 맛집 거리, 숨은 카페 등 어디든 Justin이 일정에 넣어드릴게요 ✨' },
+    ja: { name: '他に行きたい場所がある', desc: '気になる場所はある？見つけたら絶対に教えてね！夜景でも、グルメ通りでも、隠れカフェでも、Justinが旅程に入れてあげるよ ✨' },
+  },
+  raohe: {
+    en: { name: 'Raohe Night Market', desc: 'A century-old market beloved by locals — pepper pork buns and herbal pork ribs fill the air. Taste the most authentic Taipei street food in front of the temple.' },
+    kr: { name: '라오허 야시장', desc: '100년 전통의 야시장. 후추빵과 한방 돼지갈비 향이 가득한, 사원 앞에서 즐기는 가장 정통 타이베이 야식.' },
+    ja: { name: '饒河街夜市', desc: '百年の歴史の老舗夜市。胡椒餅と薬膳スペアリブの香りに包まれ、廟の前で最も地元らしい台北の味を堪能しよう。' },
+  },
+  shilin: {
+    en: { name: 'Shilin Night Market', desc: 'Taiwan\'s largest and most famous night market — giant fried chicken, salt & pepper popcorn chicken, strawberry bubble ice... every bite makes you want more.' },
+    kr: { name: '스린 야시장', desc: '대만 최대·최고의 야시장. 거대한 닭튀김, 소금후추 팝콘치킨, 딸기 버블 아이스… 모든 것이 하나같이 맛있어요.' },
+    ja: { name: '士林夜市', desc: '台湾最大・最有名の夜市。巨大フライドチキン、塩コショウポップコーンチキン、イチゴバブルアイス…どれも抗いがたいおいしさ。' },
+  },
+  ningxia: {
+    en: { name: 'Ningxia Night Market', desc: 'Taipei\'s most beloved traditional night market among locals — oyster omelette, onion pork pancake, tempura... all hyper-authentic. Lively atmosphere, guaranteed satisfaction.' },
+    kr: { name: '닝시아 야시장', desc: '현지인들이 가장 사랑하는 전통 야시장. 굴전, 파고기빵, 튀김… 모두 정통 그 자체. 활기찬 분위기로 먹고 나면 100% 만족!' },
+    ja: { name: '寧夏夜市', desc: '地元の人に最も愛される伝統夜市。蚵仔煎、ネギ肉餅、天ぷら…どれも本格派。活気があり、食べ終わったら必ず大満足。' },
+  },
+}
+
+function localizeSpot(spot) {
+  const l = SPOT_L10N[spot.key]?.[lang.value]
+  return l ? { ...spot, name: l.name, desc: l.desc, sub: '' } : { ...spot, sub: '' }
+}
+
+const localizedS1 = computed(() => S1.map(localizeSpot))
+const localizedS2 = computed(() => S2.map(localizeSpot))
+const localizedS3 = computed(() => S3.map(localizeSpot))
 
 // ─── State ────────────────────────────────────────────────────────────────────
 const state = reactive({
@@ -301,8 +356,9 @@ const state = reactive({
   cur:           0,
   jumping:       false,
   jumpSeq:       0,
-  scene4Entered: false,
-  girlExcited:   false,
+  scene4Entered:       false,
+  scene4PanelVisible:  false,
+  girlExcited:         false,
 })
 
 const worldEl      = ref(null)
@@ -313,6 +369,7 @@ let jumpTimer        = null
 let scene4Interval   = null
 let scene4JumpDelay  = null
 let shownResultModal = false
+let shownNoonModal   = false
 let scene4Blob       = null  // pre-generated screenshot blob
 
 // ─── Computed ─────────────────────────────────────────────────────────────────
@@ -333,11 +390,28 @@ const steps = computed(() => [
 ])
 const picks = computed(() => {
   const sel2keys = Array.isArray(state.sel[2]) ? state.sel[2] : []
+  const sel2spots = sel2keys.map(k => localizedS2.value.find(o => o.key === k)).filter(Boolean)
+
+  let noon = null
+  if (sel2spots.length === 1) {
+    noon = { ...sel2spots[0], stage: 2 }
+  } else if (sel2spots.length === 2) {
+    noon = {
+      key: '__combo2',
+      emoji: sel2spots[0].emoji + sel2spots[1].emoji,
+      name: sel2spots[0].name + ' + ' + sel2spots[1].name,
+      sub: '',
+      desc: sel2spots[0].desc + '\n\n' + sel2spots[1].desc,
+      photos: [...(sel2spots[0].photos ?? []), ...(sel2spots[1].photos ?? [])],
+      stage: 2,
+    }
+  }
+
   return [
-    { stage: 1, spot: S1.find(o => o.key === state.sel[1]) },
-    ...sel2keys.map(key => ({ stage: 2, spot: S2.find(o => o.key === key) })),
-    { stage: 3, spot: S3.find(o => o.key === state.sel[3]) },
-  ].filter(o => o.spot).map(o => ({ ...o.spot, stage: o.stage }))
+    state.sel[1] ? { ...localizedS1.value.find(o => o.key === state.sel[1]), stage: 1 } : null,
+    noon,
+    state.sel[3] ? { ...localizedS3.value.find(o => o.key === state.sel[3]), stage: 3 } : null,
+  ].filter(Boolean)
 })
 
 // NO button
@@ -454,6 +528,7 @@ function onWorldScroll(e) {
           state.modal = {
             emoji: tr.value.mDoneEmoji, title: tr.value.mDoneTitle,
             body: tr.value.mDoneBody,   btn:   tr.value.mDoneBtn,
+            after: () => { state.scene4PanelVisible = true },
           }
         }, 2000)
       }
@@ -463,12 +538,24 @@ function onWorldScroll(e) {
       clearInterval(scene4Interval)
       scene4Interval = null
       state.scene4Entered = false
+      state.scene4PanelVisible = false
     }
   }
 }
 function goPrev() { scrollToScene(Math.max(0, state.cur - 1)) }
 async function goNext() {
   const next = Math.min(sceneCount.value - 1, state.cur + 1)
+  if (state.cur === 2 && !shownNoonModal) {
+    shownNoonModal = true
+    state.modal = {
+      emoji: tr.value.mNoonEmoji,
+      title: tr.value.mNoonTitle,
+      body:  tr.value.mNoonBody,
+      btn:   tr.value.mNoonBtn,
+      after: async () => { await nextTick(); scrollToScene(3) },
+    }
+    return
+  }
   await nextTick()
   scrollToScene(next)
 }
@@ -536,16 +623,6 @@ function confirmSpot() {
   select(stage, opt.key)
   if (!wasSel2) {
     setTimeout(() => { state.girlExcited = true }, 300)
-    if (stage === 2) {
-      setTimeout(() => {
-        state.modal = {
-          emoji: tr.value.mNoonEmoji,
-          title: tr.value.mNoonTitle,
-          body:  tr.value.mNoonBody,
-          btn:   tr.value.mNoonBtn,
-        }
-      }, 200)
-    }
   }
 }
 function prevPhoto() {
@@ -556,7 +633,8 @@ function nextPhoto() {
   if (m && m.photoIdx < (m.opt.photos?.length ?? 1) - 1) state.spotModal.photoIdx++
 }
 
-function makeSpots(stage, arr) {
+function makeSpots(stage, arrOrRef) {
+  const arr = arrOrRef?.value ?? arrOrRef
   const isUnlocked = state.unlocked >= stage
   if (stage === 2) {
     const sel2 = Array.isArray(state.sel[2]) ? state.sel[2] : []
@@ -594,7 +672,7 @@ function updateArrowPos() {
   const rect = panelEl.getBoundingClientRect()
   arrowTopPx.value = Math.min(rect.bottom + 22, window.innerHeight - 66)
 }
-watch([() => state.cur, () => state.unlocked], () => nextTick(updateArrowPos))
+watch([() => state.cur, () => state.unlocked, () => state.scene4PanelVisible], () => nextTick(updateArrowPos))
 
 function hudCircleStyle(isDone) {
   return {
@@ -620,28 +698,29 @@ const sceneAssets = [
 watch(() => state.cur, (cur) => {
   const next = cur + 1
   if (sceneAssets[next]?.length) preloadImages(sceneAssets[next])
-  if (cur === 4) {
-    scene4Blob = null
-    // Pre-generate screenshot after all animations settle (~3.5s)
-    setTimeout(async () => {
-      if (state.cur !== 4) return
-      try {
-        const c = await html2canvas(document.body, {
-          useCORS: true,
-          scale: Math.min(window.devicePixelRatio || 2, 2),
-          width: window.innerWidth, height: window.innerHeight,
-          x: 0, y: 0, scrollX: 0, scrollY: 0,
-          windowWidth: window.innerWidth, windowHeight: window.innerHeight,
-          ignoreElements: el =>
-            el.classList?.contains('spot-overlay') ||
-            el.classList?.contains('modal-overlay'),
-        })
-        scene4Blob = await new Promise((res, rej) =>
-          c.toBlob(b => b ? res(b) : rej(new Error('toBlob null')), 'image/png')
-        )
-      } catch (e) { console.warn('Pre-gen screenshot failed:', e) }
-    }, 3500)
-  }
+})
+
+// Pre-generate screenshot after panel becomes visible (panel renders AFTER modal closes)
+watch(() => state.scene4PanelVisible, async (visible) => {
+  if (!visible) { scene4Blob = null; return }
+  setTimeout(async () => {
+    if (!state.scene4PanelVisible) return
+    try {
+      const c = await html2canvas(document.body, {
+        useCORS: true,
+        scale: Math.min(window.devicePixelRatio || 2, 2),
+        width: window.innerWidth, height: window.innerHeight,
+        x: 0, y: 0, scrollX: 0, scrollY: 0,
+        windowWidth: window.innerWidth, windowHeight: window.innerHeight,
+        ignoreElements: el =>
+          el.classList?.contains('spot-overlay') ||
+          el.classList?.contains('modal-overlay'),
+      })
+      scene4Blob = await new Promise((res, rej) =>
+        c.toBlob(b => b ? res(b) : rej(new Error('toBlob null')), 'image/png')
+      )
+    } catch (e) { console.warn('Pre-gen screenshot failed:', e) }
+  }, 1200)
 })
 
 onMounted(() => {
@@ -836,14 +915,13 @@ async function downloadResult() {
             <h2 class="pick-title">{{ tr.pick }}</h2>
             <div v-if="state.unlocked < 1" class="locked-msg">{{ tr.locked1 }}</div>
             <div v-else class="spots-list">
-              <div v-for="opt in makeSpots(1, S1)" :key="opt.key"
+              <div v-for="opt in makeSpots(1, localizedS1)" :key="opt.key"
                    class="spot-row"
                    :class="{ 'spot-row-selected':opt.isSel, 'spot-row-active':opt.isActive && !opt.isSel, 'spot-row-disabled':opt.isDisabled }"
                    @click="openSpotDetail(1, opt)">
                 <span class="spot-row-emoji">{{ opt.emoji }}</span>
                 <div class="spot-row-info">
                   <div class="spot-row-name">{{ opt.name }}</div>
-                  <div class="spot-row-sub">{{ opt.sub }}</div>
                 </div>
                 <span v-if="opt.isSel" class="spot-row-check">✓</span>
                 <span v-else-if="opt.isActive" class="spot-row-arr">›</span>
@@ -863,19 +941,17 @@ async function downloadResult() {
             <h2 class="pick-title">{{ tr.pick2 }}</h2>
             <div v-if="state.unlocked < 2" class="locked-msg">{{ tr.locked }}</div>
             <div v-else class="spots-list spots-list-2col">
-              <div v-for="opt in makeSpots(2, S2)" :key="opt.key"
+              <div v-for="opt in makeSpots(2, localizedS2)" :key="opt.key"
                    class="spot-row"
                    :class="{ 'spot-row-selected':opt.isSel, 'spot-row-active':opt.isActive && !opt.isSel, 'spot-row-disabled':opt.isDisabled }"
                    @click="openSpotDetail(2, opt)">
                 <span class="spot-row-emoji">{{ opt.emoji }}</span>
                 <div class="spot-row-info">
                   <div class="spot-row-name">{{ opt.name }}</div>
-                  <div class="spot-row-sub">{{ opt.sub }}</div>
                 </div>
                 <span v-if="opt.isSel" class="spot-row-check">✓</span>
               </div>
             </div>
-            <p class="pick2-note">{{ tr.pick2Note }}</p>
           </div>
         </div>
       </div>
@@ -890,14 +966,13 @@ async function downloadResult() {
             <h2 class="pick-title">{{ tr.pickLast }}</h2>
             <div v-if="state.unlocked < 3" class="locked-msg">{{ tr.locked }}</div>
             <div v-else class="spots-list">
-              <div v-for="opt in makeSpots(3, S3)" :key="opt.key"
+              <div v-for="opt in makeSpots(3, localizedS3)" :key="opt.key"
                    class="spot-row"
                    :class="{ 'spot-row-selected':opt.isSel, 'spot-row-active':opt.isActive && !opt.isSel, 'spot-row-disabled':opt.isDisabled }"
                    @click="openSpotDetail(3, opt)">
                 <span class="spot-row-emoji">{{ opt.emoji }}</span>
                 <div class="spot-row-info">
                   <div class="spot-row-name">{{ opt.name }}</div>
-                  <div class="spot-row-sub">{{ opt.sub }}</div>
                 </div>
                 <span v-if="opt.isSel" class="spot-row-check">✓</span>
                 <span v-else-if="opt.isActive" class="spot-row-arr">›</span>
@@ -910,7 +985,7 @@ async function downloadResult() {
 
     <!-- Scene 4 · 完成 -->
     <section v-if="done" :ref="el => { if (el) sceneEls[4] = el }" class="scene">
-      <div class="panel-wrap" style="transform:translate(-50%,-54%)">
+      <div v-if="state.scene4PanelVisible" class="panel-wrap" style="transform:translate(-50%,-54%)">
         <div class="panel panel-gold" style="width:min(520px,90vw)">
           <div class="panel-header panel-header-gold">
             <span class="panel-header-text" style="color:#5c3c05;text-shadow:0 1px 0 rgba(255,255,255,.5)">{{ tr.complete }}</span>
@@ -950,7 +1025,6 @@ async function downloadResult() {
         <div class="spot-popup-hero">{{ state.spotModal.opt.emoji }}</div>
         <div class="spot-popup-content">
           <h3 class="spot-popup-name">{{ state.spotModal.opt.name }}</h3>
-          <p  class="spot-popup-sub">{{ state.spotModal.opt.sub }}</p>
           <p  class="spot-popup-desc">{{ state.spotModal.opt.desc }}</p>
           <!-- Photo Carousel -->
           <div v-if="state.spotModal.opt.photos?.length" class="spot-carousel">
@@ -1286,19 +1360,16 @@ async function downloadResult() {
   color: #c0392b; font-weight: 600;
   text-shadow: 0 1px 0 rgba(255,255,255,.8);
 }
-.spots-list-2col {
+.spots-list.spots-list-2col {
   display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  flex-direction: unset;
 }
 .spots-list-2col .spot-row {
-  flex-direction: column; align-items: center; justify-content: center;
-  text-align: center; padding: 12px 8px; gap: 4px; position: relative;
+  padding: 10px 8px; gap: 6px;
 }
-.spots-list-2col .spot-row-emoji { font-size: 2rem; }
-.spots-list-2col .spot-row-info  { align-items: center; }
-.spots-list-2col .spot-row-check {
-  position: absolute; top: 6px; right: 8px;
-  font-size: 1rem; color: #2f8e3a;
-}
+.spots-list-2col .spot-row-emoji { font-size: clamp(20px, 4.5vw, 26px); }
+.spots-list-2col .spot-row-name  { font-size: clamp(11px, 2.6vw, 14px); }
+.spots-list-2col .spot-row-sub   { font-size: clamp(9px, 1.9vw, 11px); }
 .locked-msg {
   margin: 10px auto 0; background: rgba(95,69,38,.07);
   border: 2px dashed #bb9560; border-radius: 14px;
