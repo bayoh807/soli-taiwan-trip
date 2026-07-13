@@ -111,7 +111,7 @@ const I18N  = {
     mDoneBtn:'查看行程',
     boyGreet:['歡迎來到台灣！', '期待在台灣見到你！'],
     girl1Pre:'早上要去哪裡呢？', girl1Post:'好期待！',
-    girl2Pre:'要去哪裡玩呢？',   girl2Post:'走吧！走吧！',
+    girl2Pre:'要去哪裡玩呢？',   girl2Post:'走吧！走吧',
     girl3Pre:'台灣的晚上在幹嘛呢？', girl3Post:'❤️',
     girl4Bubble:'好開心！',
     boy4Bubble:'我很期待一起出去玩！',
