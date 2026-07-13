@@ -493,6 +493,18 @@ function closeModal() {
   if (a) setTimeout(a, 380)
 }
 
+// ─── Arrow position (below panel) ────────────────────────────────────────────
+const arrowTopPx = ref(null)
+function updateArrowPos() {
+  const sceneEl = sceneEls[state.cur]
+  if (!sceneEl) { arrowTopPx.value = null; return }
+  const panelEl = sceneEl.querySelector('.panel-wrap')
+  if (!panelEl) { arrowTopPx.value = null; return }
+  const rect = panelEl.getBoundingClientRect()
+  arrowTopPx.value = Math.min(rect.bottom + 22, window.innerHeight - 66)
+}
+watch([() => state.cur, () => state.unlocked], () => nextTick(updateArrowPos))
+
 function hudCircleStyle(isDone) {
   return {
     width:'28px', height:'28px', borderRadius:'50%',
@@ -508,6 +520,8 @@ onMounted(() => {
   [mapBg, jumpSprite, arrowLeft, arrowRight, soliChar, girlSprite, alien1, alien2, alien3].forEach(src => {
     const img = new Image(); img.src = src
   })
+  window.addEventListener('resize', updateArrowPos)
+  nextTick(updateArrowPos)
 })
 
 async function downloadResult() {
@@ -570,8 +584,14 @@ async function downloadResult() {
   <div class="hud">
     <template v-for="(st, i) in steps" :key="i">
       <div class="hud-node">
-        <img v-if="st.isDone && st.alienImg" :src="st.alienImg" class="hud-alien-img" />
-        <div v-else :style="hudCircleStyle(st.isDone)">{{ st.isDone ? '✓' : String(i+1) }}</div>
+        <Transition name="hud-pop">
+          <img v-if="st.isDone && st.alienImg"
+               :key="'a' + i"
+               :src="st.alienImg" class="hud-alien-img" />
+          <div v-else
+               :key="'c' + i + st.isDone"
+               :style="hudCircleStyle(st.isDone)">{{ st.isDone ? '✓' : String(i+1) }}</div>
+        </Transition>
       </div>
       <div v-if="i < steps.length - 1" class="hud-sep"></div>
     </template>
@@ -610,7 +630,8 @@ async function downloadResult() {
   </div>
 
   <!-- ── Nav Arrows ───────────────────────────────────────────── -->
-  <div class="nav-arrows">
+  <div class="nav-arrows"
+       :style="arrowTopPx != null ? { top: arrowTopPx + 'px', bottom: 'auto' } : {}">
     <div class="arrow-slot">
       <button v-if="leftVisible" class="arrow-btn" aria-label="上一站" @click="goPrev">
         <img :src="arrowLeft" alt="" />
@@ -841,7 +862,7 @@ async function downloadResult() {
   top: max(10px, env(safe-area-inset-top));
   right: max(14px, env(safe-area-inset-right));
   z-index: 70;
-  display: flex; gap: 5px;
+  display: flex; flex-direction: column; gap: 5px;
 }
 .lang-icon {
   width: 28px; height: 28px; border-radius: 50%;
@@ -1298,6 +1319,15 @@ async function downloadResult() {
 /* ── Speech Bubble Keyframes ─────────────────────────────────── */
 @keyframes sb-bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
 @keyframes sb-caret { 0%,50% { opacity:1 } 50.01%,100% { opacity:0 } }
+
+/* ── HUD node flash (on completion) ─────────────────────────── */
+.hud-pop-enter-active { animation: hudFlash .55s cubic-bezier(.2,1.3,.5,1); }
+@keyframes hudFlash {
+  0%   { transform: scale(0) rotate(-15deg); opacity: 0; filter: brightness(5) drop-shadow(0 0 10px #fff); }
+  55%  { transform: scale(1.3) rotate(6deg);  filter: brightness(2) drop-shadow(0 0 14px #ffd700cc); }
+  80%  { transform: scale(0.92) rotate(-2deg); filter: brightness(1.1); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; filter: none; }
+}
 
 /* ── Mobile ──────────────────────────────────────────────────── */
 @media (max-width: 480px) {
