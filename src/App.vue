@@ -1,8 +1,8 @@
 <script setup>
 import { ref, reactive, computed, nextTick, onMounted, watch } from 'vue'
 import html2canvas from 'html2canvas'
-import shipBg    from '../assets/ship-bg.jpeg'
-import mapBg     from '../assets/map-bg.png'
+import shipBg    from '../assets/ship-bg-new.png'
+import mapBg     from '../assets/map-bg-new.png'
 import jumpSprite from '../assets/jump-sprite.png'
 import arrowLeft  from '../assets/arrow-left.png'
 import arrowRight from '../assets/arrow-right.png'
@@ -95,6 +95,7 @@ const I18N  = {
     questSub:'READY FOR YOUR TAIWAN ADVENTURE?',
     yesBtn:'YES 出發！', noBtn:'NO 再想想',
     pick:'選一個地點展開探索', pickLast:'選一個地點完成旅程',
+    pick2Note:'下午的行程想混搭的話跟我說喔',
     locked1:'🔒 先回到起點回答問題，即可解鎖',
     locked:'🔒 完成上一站，解鎖此地點',
     complete:'🏝️ 你的台灣旅程 · COMPLETE',
@@ -126,6 +127,7 @@ const I18N  = {
     questSub:'READY FOR YOUR TAIWAN ADVENTURE?',
     yesBtn:"YES, Let's Go!", noBtn:'NO, hmm...',
     pick:'Choose a destination', pickLast:'Choose your final stop',
+    pick2Note:'下午的行程想混搭的話跟我說喔',
     locked1:'🔒 Go back to start to unlock',
     locked:'🔒 Complete the previous stop first',
     complete:'🏝️ Your Taiwan Journey · COMPLETE',
@@ -157,6 +159,7 @@ const I18N  = {
     questSub:'대만 어드벤처 준비 완료?',
     yesBtn:'YES, 출발!', noBtn:'NO, 글쎄...',
     pick:'목적지를 선택하세요', pickLast:'마지막 목적지를 선택하세요',
+    pick2Note:'下午的行程想混搭的話跟我說喔',
     locked1:'🔒 시작 지점으로 돌아가서 잠금 해제',
     locked:'🔒 이전 단계를 완료해야 합니다',
     complete:'🏝️ 대만 여행 · 완료',
@@ -188,6 +191,7 @@ const I18N  = {
     questSub:'READY FOR YOUR TAIWAN ADVENTURE?',
     yesBtn:'YES 出発！', noBtn:'NO まだかな…',
     pick:'目的地を選ぼう', pickLast:'最後の場所を選ぼう',
+    pick2Note:'下午的行程想混搭的話跟我說喔',
     locked1:'🔒 最初に戻って質問に答えてね',
     locked:'🔒 前のステージをクリアしてね',
     complete:'🏝️ 台湾の旅 · COMPLETE',
@@ -216,63 +220,63 @@ const tr = computed(() => I18N[lang.value] ?? I18N.en)
 
 // ─── Spot Data ────────────────────────────────────────────────────────────────
 const S1 = [
-  { key:'101',    emoji:'🏙️', name:'台北 101',  sub:'SKYLINE TOWER',
-    desc:'508 公尺的世界地標，頂樓觀景台 360° 俯瞰台北全景，日夜各有絕美風貌。',
-    photos:[
-      'https://picsum.photos/seed/tp101a/480/280',
-      'https://picsum.photos/seed/tp101b/480/280',
-    ]},
-  { key:'jiufen', emoji:'🏮', name:'九份老街',   sub:'LANTERN TOWN',
+  { key:'jiufen',  emoji:'🏮', name:'九份老街',  sub:'LANTERN TOWN',
     desc:'山城老街掛滿紅燈籠，傳說是宮崎駿《神隱少女》的靈感來源，霧雨中格外有詩意。',
     photos:[
       'https://picsum.photos/seed/jiufen1/480/280',
       'https://picsum.photos/seed/jiufen2/480/280',
     ]},
-  { key:'yehliu', emoji:'🪨', name:'野柳女王頭', sub:'SEA ROCKS',
-    desc:'大海與風雨共同雕刻的地質奇觀，女王頭造型獨特，每年吸引百萬旅人朝聖。',
+  { key:'palace',  emoji:'🏛️', name:'故宮博物院', sub:'NATIONAL MUSEUM',
+    desc:'珍藏全球最豐富的中華文物，翠玉白菜、肉形石等鎮館之寶，走進五千年文明史。',
     photos:[
-      'https://picsum.photos/seed/yehliu1/480/280',
-      'https://picsum.photos/seed/yehliu2/480/280',
+      'https://picsum.photos/seed/palace1/480/280',
+      'https://picsum.photos/seed/palace2/480/280',
+    ]},
+  { key:'101',     emoji:'🏙️', name:'台北 101',  sub:'SKYLINE TOWER',
+    desc:'508 公尺的世界地標，頂樓觀景台 360° 俯瞰台北全景，日夜各有絕美風貌。',
+    photos:[
+      'https://picsum.photos/seed/tp101a/480/280',
+      'https://picsum.photos/seed/tp101b/480/280',
     ]},
 ]
 const S2 = [
-  { key:'sunmoon',  emoji:'🚣', name:'日月潭',   sub:'SUN MOON LAKE',
-    desc:'台灣最大高山湖泊，清晨薄霧如仙境，可搭船遊湖或騎自行車欣賞環湖美景。',
+  { key:'shifen',   emoji:'💧', name:'十分瀑布 + 平溪', sub:'WATERFALL & LANTERNS',
+    desc:'台灣版尼加拉瀑布壯觀雄渾，平溪老街放天燈許願，是山林間最浪漫的半日遊。',
     photos:[
-      'https://picsum.photos/seed/sunmoon1/480/280',
-      'https://picsum.photos/seed/sunmoon2/480/280',
+      'https://picsum.photos/seed/shifen1/480/280',
+      'https://picsum.photos/seed/shifen2/480/280',
     ]},
-  { key:'qingjing', emoji:'🐑', name:'清境農場', sub:'GREEN MEADOWS',
-    desc:'海拔 1748 公尺的高山草原，近距離接觸綿羊，遠眺合歡山群峰，雲霧繚繞令人心醉。',
+  { key:'houtong', emoji:'🐱', name:'猴硐貓村 + 野柳女王頭', sub:'CATS & GEOLOGY',
+    desc:'猴硐是全台最著名的貓村，野柳女王頭則是大自然雕刻的地質奇觀，兩地合搭超值。',
     photos:[
-      'https://picsum.photos/seed/qingjing1/480/280',
-      'https://picsum.photos/seed/qingjing2/480/280',
+      'https://picsum.photos/seed/houtong1/480/280',
+      'https://picsum.photos/seed/houtong2/480/280',
     ]},
-  { key:'gaomei',   emoji:'🌅', name:'高美濕地', sub:'SUNSET WETLAND',
-    desc:'台中最美夕陽觀賞地，退潮時水面如鏡，倒映天空與風車，是攝影師的天堂。',
+  { key:'art',     emoji:'🎨', name:'藝術展',   sub:'ART EXHIBITION',
+    desc:'台北藝文選品，從當代藝術到設計展，讓旅程多一份品味與驚喜。',
     photos:[
-      'https://picsum.photos/seed/gaomei1/480/280',
-      'https://picsum.photos/seed/gaomei2/480/280',
+      'https://picsum.photos/seed/art1/480/280',
+      'https://picsum.photos/seed/art2/480/280',
     ]},
 ]
 const S3 = [
-  { key:'kenting', emoji:'🏖️', name:'墾丁海灘', sub:'SOUTH BEACH',
-    desc:'台灣最南端熱帶天堂，澄澈海水白沙灘，夏日衝浪浮潛，夜晚逛夜市，每天都精彩。',
+  { key:'raohe',   emoji:'🏮', name:'饒河街夜市', sub:'RAOHE NIGHT MARKET',
+    desc:'百年歷史的老牌夜市，胡椒餅、藥燉排骨飄香，在廟宇前品嚐最道地的台北滋味。',
     photos:[
-      'https://picsum.photos/seed/kenting1/480/280',
-      'https://picsum.photos/seed/kenting2/480/280',
+      'https://picsum.photos/seed/raohe1/480/280',
+      'https://picsum.photos/seed/raohe2/480/280',
     ]},
-  { key:'tainan',  emoji:'🏯', name:'台南古都', sub:'OLD CAPITAL',
-    desc:'台灣最古老城市，赤崁樓、安平古堡等百年古蹟，加上牛肉湯與蝦仁飯的小吃天堂。',
+  { key:'shilin',  emoji:'🍢', name:'士林夜市',  sub:'SHILIN NIGHT MARKET',
+    desc:'台灣最大最知名的夜市，豪大大雞排、鹹酥雞、草莓泡泡冰，每樣都讓你難以抗拒。',
     photos:[
-      'https://picsum.photos/seed/tainan1/480/280',
-      'https://picsum.photos/seed/tainan2/480/280',
+      'https://picsum.photos/seed/shilin1/480/280',
+      'https://picsum.photos/seed/shilin2/480/280',
     ]},
-  { key:'love',    emoji:'🚤', name:'高雄愛河', sub:'LOVE RIVER',
-    desc:'高雄市中心的浪漫愛河，夜晚燈光倒映水面，搭船夜遊是最浪漫的約會方式。',
+  { key:'yuanshan',emoji:'🎪', name:'圓山麻吉市集', sub:'YUANSHAN MARKET',
+    desc:'結合文青、美食與設計的特色市集，在圓山美麗殿旁享受一個輕鬆悠閒的台灣夜晚。',
     photos:[
-      'https://picsum.photos/seed/loveharbor1/480/280',
-      'https://picsum.photos/seed/loveharbor2/480/280',
+      'https://picsum.photos/seed/yuanshan1/480/280',
+      'https://picsum.photos/seed/yuanshan2/480/280',
     ]},
 ]
 
@@ -823,6 +827,7 @@ async function downloadResult() {
           <div class="panel-header"><span class="panel-header-text">{{ tr.stop2 }}</span></div>
           <div class="panel-body">
             <h2 class="pick-title">{{ tr.pick }}</h2>
+            <p class="pick2-note">{{ tr.pick2Note }}</p>
             <div v-if="state.unlocked < 2" class="locked-msg">{{ tr.locked }}</div>
             <div v-else class="spots-list">
               <div v-for="opt in makeSpots(2, S2)" :key="opt.key"
@@ -968,6 +973,13 @@ async function downloadResult() {
 }
 .fixed-bg .scene-bg {
   position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
+@media (min-width: 769px) {
+  .fixed-bg .scene-bg {
+    object-fit: contain; width: auto; height: 100%;
+    left: 50%; transform: translateX(-50%);
+    inset: unset; top: 0; bottom: 0;
+  }
 }
 
 /* ── Language Toggle ─────────────────────────────────────────── */
@@ -1231,6 +1243,10 @@ async function downloadResult() {
 .pick-title {
   margin: 0 0 12px; font-size: clamp(17px,4vw,24px); color: #3e2c10;
   text-shadow: 0 1px 0 rgba(255,255,255,.8);
+}
+.pick2-note {
+  margin: -6px 0 10px; font-size: clamp(11px,2.8vw,13px);
+  color: #c0392b; font-weight: 600;
 }
 .locked-msg {
   margin: 10px auto 0; background: rgba(95,69,38,.07);
