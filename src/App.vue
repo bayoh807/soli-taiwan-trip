@@ -72,7 +72,7 @@ function SpeechBubble(el, options) {
 function initBubble(el, lines, opts = {}) {
   if (!el) return null
   el.setAttribute('data-lines', Array.isArray(lines) ? lines.join('|') : lines)
-  return SpeechBubble(el, { loop: false, speed: 85, holdBetween: 700, clearGap: 300, ...opts })
+  return SpeechBubble(el, { loop: false, speed: 85, holdBetween: 1000, clearGap: 200, ...opts })
 }
 
 // ─── i18n ─────────────────────────────────────────────────────────────────────
@@ -88,6 +88,7 @@ const I18N  = {
   zh: {
     depart:'出發', am:'早', noon:'中', pm:'晚',
     stop1:'第一站', stop2:'第二站', stop3:'第三站',
+    questHeader:'冒險任務 · QUEST',
     questTitle:'準備好開始\n你的台灣之旅了嗎？',
     questSub:'READY FOR YOUR TAIWAN ADVENTURE?',
     yesBtn:'YES 出發！', noBtn:'NO 再想想',
@@ -97,6 +98,7 @@ const I18N  = {
     complete:'🏝️ 你的台灣旅程 · COMPLETE',
     confirmPick:'確認選擇', download:'📥 下載截圖',
     downloadHint:'下載圖片分享給 Justin 吧 📮',
+    downloadFail:'截圖失敗，請用手機截圖功能',
     hint:'偷偷說…「NO」好像有點滑溜 😏', selected:'✓ 已選擇',
     mYesEmoji:'🎁', mYesTitle:'神秘禮盒 GET!',
     mYesBody:'恭喜獲得「越南禮盒」\n\n你的台灣冒險正式展開～',
@@ -107,10 +109,17 @@ const I18N  = {
     mDoneEmoji:'🏆', mDoneTitle:'旅程完成！',
     mDoneBody:'你已選好台灣一日行程，\n準備出發了嗎？',
     mDoneBtn:'查看行程',
+    boyGreet:['歡迎來到台灣！', '期待在台灣見到你！'],
+    girl1Pre:'早上要去哪裡呢？', girl1Post:'好期待！',
+    girl2Pre:'要去哪裡玩呢？',   girl2Post:'走吧！走吧！',
+    girl3Pre:'台灣的晚上在幹嘛呢？', girl3Post:'❤️',
+    girl4Bubble:'好開心！',
+    boy4Bubble:'我很期待一起出去玩！',
   },
   en: {
     depart:'Start', am:'AM', noon:'Noon', pm:'PM',
     stop1:'Stop 1', stop2:'Stop 2', stop3:'Stop 3',
+    questHeader:'ADVENTURE · QUEST',
     questTitle:'Ready for your\nTaiwan adventure?',
     questSub:'READY FOR YOUR TAIWAN ADVENTURE?',
     yesBtn:"YES, Let's Go!", noBtn:'NO, hmm...',
@@ -120,6 +129,7 @@ const I18N  = {
     complete:'🏝️ Your Taiwan Journey · COMPLETE',
     confirmPick:'Confirm', download:'📥 Save Screenshot',
     downloadHint:'Download & share with Justin 📮',
+    downloadFail:'Screenshot failed — use your phone\'s screen capture',
     hint:"Psst… the NO button is a bit slippery 😏", selected:'✓ Selected',
     mYesEmoji:'🎁', mYesTitle:'Mystery Box GET!',
     mYesBody:'You received a "Vietnam Gift Box"!\n\nYour Taiwan adventure begins～',
@@ -129,11 +139,18 @@ const I18N  = {
     mNoonBtn:'Add to Bag',
     mDoneEmoji:'🏆', mDoneTitle:'Journey Complete!',
     mDoneBody:'Your Taiwan day trip is planned!\nReady to go?',
-    mDoneBtn:'View itinerary',
+    mDoneBtn:'View Itinerary',
+    boyGreet:['Welcome to Taiwan!', "Can't wait to see you here!"],
+    girl1Pre:'Where should we go this morning?', girl1Post:'So excited!',
+    girl2Pre:'Where shall we explore?',          girl2Post:"Let's go! Let's go!",
+    girl3Pre:"What's the plan for tonight?",     girl3Post:'❤️',
+    girl4Bubble:'So happy!',
+    boy4Bubble:"I can't wait to hang out with you!",
   },
   kr: {
     depart:'출발', am:'아침', noon:'점심', pm:'저녁',
     stop1:'1번째', stop2:'2번째', stop3:'3번째',
+    questHeader:'어드벤처 · 퀘스트',
     questTitle:'대만 여행을\n시작할 준비가 됐나요?',
     questSub:'대만 어드벤처 준비 완료?',
     yesBtn:'YES, 출발!', noBtn:'NO, 글쎄...',
@@ -143,6 +160,7 @@ const I18N  = {
     complete:'🏝️ 대만 여행 · 완료',
     confirmPick:'확인', download:'📥 스크린샷 저장',
     downloadHint:'Justin에게 사진 공유하기 📮',
+    downloadFail:'스크린샷 실패 — 핸드폰 화면 캡처를 사용해주세요',
     hint:'잠깐... NO 버튼이 좀 미끄럽네요 😏', selected:'✓ 선택됨',
     mYesEmoji:'🎁', mYesTitle:'신비 상자 GET!',
     mYesBody:'「베트남 선물 상자」획득!\n\n대만 어드벤처 시작～',
@@ -153,10 +171,17 @@ const I18N  = {
     mDoneEmoji:'🏆', mDoneTitle:'여행 완료!',
     mDoneBody:'대만 하루 여행 계획 완성!\n출발할 준비 됐나요?',
     mDoneBtn:'일정 보기',
+    boyGreet:['대만에 오신 걸 환영해요!', '대만에서 만나길 기대해요!'],
+    girl1Pre:'오늘 아침엔 어디 갈까요?', girl1Post:'너무 기대돼요!',
+    girl2Pre:'어디를 탐험할까요?',       girl2Post:'가자! 가자!',
+    girl3Pre:'오늘 저녁 계획은요?',      girl3Post:'❤️',
+    girl4Bubble:'너무 행복해요!',
+    boy4Bubble:'같이 놀러 가기 너무 기대돼요!',
   },
   ja: {
     depart:'出発', am:'朝', noon:'昼', pm:'夜',
     stop1:'第1スポット', stop2:'第2スポット', stop3:'第3スポット',
+    questHeader:'アドベンチャー · クエスト',
     questTitle:'台湾の旅へ\n出発する準備はできた？',
     questSub:'READY FOR YOUR TAIWAN ADVENTURE?',
     yesBtn:'YES 出発！', noBtn:'NO まだかな…',
@@ -166,6 +191,7 @@ const I18N  = {
     complete:'🏝️ 台湾の旅 · COMPLETE',
     confirmPick:'確認', download:'📥 スクリーンショット保存',
     downloadHint:'Justinに画像を送ってね 📮',
+    downloadFail:'スクリーンショット失敗 — スマホの画面キャプチャをご利用ください',
     hint:'「NO」ボタン、なんか滑ってる 😏', selected:'✓ 選択済み',
     mYesEmoji:'🎁', mYesTitle:'ミステリーボックス GET!',
     mYesBody:'「ベトナムギフトボックス」ゲット！\n\n台湾アドベンチャーが始まる～',
@@ -176,6 +202,12 @@ const I18N  = {
     mDoneEmoji:'🏆', mDoneTitle:'旅完了！',
     mDoneBody:'台湾一日旅行の計画完成！\n出発の準備はできた？',
     mDoneBtn:'旅程を見る',
+    boyGreet:['台湾へようこそ！', 'ここで会えるのを楽しみにしてるよ！'],
+    girl1Pre:'今朝はどこ行こうか？', girl1Post:'楽しみ！',
+    girl2Pre:'どこを探検しようか？', girl2Post:'行こう！行こう！',
+    girl3Pre:'今夜の予定は？',       girl3Post:'❤️',
+    girl4Bubble:'嬉しい！',
+    boy4Bubble:'一緒に遊びに行くの楽しみだよ！',
   },
 }
 const tr = computed(() => I18N[lang.value] ?? I18N.en)
@@ -311,12 +343,12 @@ const noWrapStyle = computed(() =>
 // Girl sprite background-image (Vite hashes asset URL, must be inline style)
 const girlBgStyle = computed(() => ({ backgroundImage: `url('${girlSprite}')` }))
 
-// Scene 1-3 girl bubble — key triggers remount on scene/state change
-const girlBubbleKey   = computed(() => `${state.cur}-${state.girlExcited}`)
+// Scene 1-3 girl bubble — key triggers remount on scene/state/lang change
+const girlBubbleKey   = computed(() => `${lang.value}-${state.cur}-${state.girlExcited}`)
 const girlBubbleLines = computed(() => {
-  const exc = state.girlExcited, c = state.cur
-  if (exc) return { 1:['好期待！'], 2:['走吧！走吧'], 3:['❤️'] }[c] || ['']
-  return { 1:['早上要去哪裡呢？'], 2:['要去哪裡玩呢？'], 3:['台灣的晚上在幹嘛呢？'] }[c] || ['']
+  const exc = state.girlExcited, c = state.cur, t = tr.value
+  if (exc) return { 1:[t.girl1Post], 2:[t.girl2Post], 3:[t.girl3Post] }[c] || ['']
+  return { 1:[t.girl1Pre], 2:[t.girl2Pre], 3:[t.girl3Pre] }[c] || ['']
 })
 
 // Scene 4 girl col ref — jumpY animation applied via DOM (bubble moves with char)
@@ -493,6 +525,13 @@ function closeModal() {
   if (a) setTimeout(a, 380)
 }
 
+// ─── HUD flash on scene navigation ───────────────────────────────────────────
+const hudFlashKeys = reactive([0, 0, 0, 0])
+watch(() => state.cur, (cur) => {
+  const prev = cur - 1
+  if (prev >= 1 && prev <= 3 && state.sel[prev]) hudFlashKeys[prev]++
+})
+
 // ─── Arrow position (below panel) ────────────────────────────────────────────
 const arrowTopPx = ref(null)
 function updateArrowPos() {
@@ -516,10 +555,24 @@ function hudCircleStyle(isDone) {
   }
 }
 
+function preloadImages(srcs) {
+  srcs.forEach(src => { if (src) { const img = new Image(); img.src = src } })
+}
+const sceneAssets = [
+  [shipBg, soliChar],
+  [mapBg, girlSprite, arrowLeft, alien1],
+  [arrowRight, alien2],
+  [alien3, jumpSprite],
+  [],
+]
+watch(() => state.cur, (cur) => {
+  const next = cur + 1
+  if (sceneAssets[next]?.length) preloadImages(sceneAssets[next])
+})
+
 onMounted(() => {
-  [mapBg, jumpSprite, arrowLeft, arrowRight, soliChar, girlSprite, alien1, alien2, alien3].forEach(src => {
-    const img = new Image(); img.src = src
-  })
+  preloadImages(sceneAssets[0])
+  preloadImages(sceneAssets[1])
   window.addEventListener('resize', updateArrowPos)
   nextTick(updateArrowPos)
 })
@@ -551,7 +604,7 @@ async function downloadResult() {
     URL.revokeObjectURL(url)
   } catch(e) {
     console.error('Screenshot failed:', e)
-    alert('截圖失敗，請用手機截圖功能')
+    alert(tr.value.downloadFail)
   }
 }
 </script>
@@ -586,7 +639,7 @@ async function downloadResult() {
       <div class="hud-node">
         <Transition name="hud-pop">
           <img v-if="st.isDone && st.alienImg"
-               :key="'a' + i"
+               :key="'a' + i + hudFlashKeys[i]"
                :src="st.alienImg" class="hud-alien-img" />
           <div v-else
                :key="'c' + i + st.isDone"
@@ -614,7 +667,7 @@ async function downloadResult() {
     <Transition name="girl4">
       <div v-if="state.scene4Entered" class="scene4-char-slot">
         <div ref="scene4GirlColRef" class="char-col">
-          <div class="speech-bubble" :ref="el => el && initBubble(el, ['好開心！'])"></div>
+          <div :key="lang + '4g'" class="speech-bubble" :ref="el => el && initBubble(el, [tr.girl4Bubble])"></div>
           <div :key="state.jumpSeq" :style="scene4SpriteFrameStyle"></div>
         </div>
       </div>
@@ -622,7 +675,7 @@ async function downloadResult() {
     <Transition name="boy4">
       <div v-if="state.scene4Entered" class="scene4-char-slot">
         <div class="char-col">
-          <div class="speech-bubble" :ref="el => el && initBubble(el, ['我很期待一起出去玩！'])"></div>
+          <div :key="lang + '4b'" class="speech-bubble" :ref="el => el && initBubble(el, [tr.boy4Bubble])"></div>
           <div :style="soliSpriteStyle"></div>
         </div>
       </div>
@@ -654,7 +707,7 @@ async function downloadResult() {
         <div class="panel" style="width:min(600px,88vw)">
           <div class="panel-header">
             <span>🍁</span>
-            <span class="panel-header-text">冒險任務 · QUEST</span>
+            <span class="panel-header-text">{{ tr.questHeader }}</span>
             <span>🍁</span>
           </div>
           <div class="panel-body" style="text-align:center">
@@ -675,7 +728,7 @@ async function downloadResult() {
       <!-- Boy (scene 0) -->
       <div class="scene-0-char" :style="{ opacity: state.started ? 0 : 1, transition:'opacity 0.5s ease' }" aria-hidden="true">
         <div class="char-col">
-          <div class="speech-bubble" :ref="el => el && initBubble(el, ['歡迎來到台灣', '期待在台灣見到你'])"></div>
+          <div :key="lang + '0'" class="speech-bubble" :ref="el => el && initBubble(el, tr.boyGreet)"></div>
           <div :style="soliScene0Style"></div>
         </div>
       </div>
@@ -865,19 +918,18 @@ async function downloadResult() {
   display: flex; flex-direction: column; gap: 5px;
 }
 .lang-icon {
-  width: 28px; height: 28px; border-radius: 50%;
-  border: 2px solid rgba(255,255,255,.55);
-  background: rgba(255,255,255,.82);
-  cursor: pointer; font-size: 15px; line-height: 1;
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 2px solid rgba(107,78,42,.35);
+  background: rgba(255,255,255,.97);
+  cursor: pointer; font-size: 20px; line-height: 1;
   display: flex; align-items: center; justify-content: center;
-  padding: 0;
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 2px 6px rgba(60,40,10,.2);
+  padding: 0; overflow: hidden;
+  box-shadow: 0 2px 7px rgba(0,0,0,.22);
   transition: transform .14s ease, border-color .14s ease, box-shadow .14s ease;
 }
 .lang-icon.active {
-  border-color: #6b4e2a;
-  box-shadow: 0 2px 8px rgba(60,40,10,.35);
+  border-color: #c9962e;
+  box-shadow: 0 0 0 2.5px rgba(201,150,46,.45), 0 2px 7px rgba(0,0,0,.22);
   transform: scale(1.18);
 }
 .lang-icon:not(.active):hover { transform: scale(1.1); }
@@ -998,12 +1050,18 @@ async function downloadResult() {
 .arrow-btn {
   pointer-events: auto; padding: 0; border: none; background: none;
   cursor: pointer; line-height: 0;
-  filter: drop-shadow(0 5px 6px rgba(10,30,60,.35));
   transition: transform .14s ease;
-  animation: arrowpulse 1.4s ease-in-out infinite;
+  animation: arrowpulse 1.4s ease-in-out infinite, arrowGlow 2.4s ease-in-out infinite;
 }
-.arrow-btn:hover { transform: translateY(-3px) scale(1.05); animation: none; }
-.arrow-btn:active { transform: translateY(1px) scale(.96); }
+.arrow-btn:hover {
+  transform: translateY(-3px) scale(1.05); animation: none;
+  filter: drop-shadow(0 5px 6px rgba(10,30,60,.35)) drop-shadow(0 0 18px rgba(255,220,80,.9));
+}
+.arrow-btn:active { transform: translateY(1px) scale(.96); animation: none; }
+@keyframes arrowGlow {
+  0%,100% { filter: drop-shadow(0 5px 6px rgba(10,30,60,.35)) drop-shadow(0 0 4px rgba(255,220,80,.2)); }
+  50%      { filter: drop-shadow(0 5px 6px rgba(10,30,60,.35)) drop-shadow(0 0 18px rgba(255,220,80,.85)); }
+}
 .arrow-btn img { display: block; width: clamp(52px, 9vw, 86px); height: auto; }
 
 /* ── World ───────────────────────────────────────────────────── */
@@ -1337,7 +1395,7 @@ async function downloadResult() {
   .btn-row { gap: 8px; }
   .spot-row { padding: 10px 12px; gap: 10px; }
   .spot-row-emoji { font-size: 26px; }
-  .lang-icon { width: 26px; height: 26px; font-size: 14px; }
+  .lang-icon { width: 28px; height: 28px; font-size: 18px; }
   .speech-bubble { padding: 7px 12px 8px; }
   .speech-bubble .sb-text { font-size: 13px; }
 }
