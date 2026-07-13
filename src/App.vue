@@ -253,7 +253,8 @@ const S2 = [
     photos:[ si('s2/danshui/1.jpg'), si('s2/danshui/2.jpg'), si('s2/danshui/3.jpg') ].filter(Boolean) },
   { key:'art',     emoji:'🎨', name:'展覽',
     desc:'台北最精彩的三檔展覽：波特羅、共織宇宙、世界是一片感知的膜，藝術能量滿滿的一天。',
-    photos:[ si('s2/art/1.jpg'), si('s2/art/2.jpg'), si('s2/art/3.jpg') ].filter(Boolean) },
+    photos:[ si('s2/art/1.jpg'), si('s2/art/2.jpg'), si('s2/art/3.jpg') ].filter(Boolean),
+    links:['https://www.instagram.com/p/DahwZzNgdGy/', 'https://www.instagram.com/p/DWL0XM8Ep_d/', 'https://www.instagram.com/p/DYt7IqXTEKr/'] },
   { key:'other',   emoji:'🗺️', name:'我有其他想去的地方',
     desc:'有心動的地方嗎？找到之後一定要跟我說喔！不管是夜景、小吃街、特色咖啡廳，Justin 幫你把它排進行程 ✨',
     photos:[ si('s2/other/1.jpg') ].filter(Boolean) },
@@ -1083,6 +1084,14 @@ async function downloadResult() {
               <img :src="state.spotModal.opt.photos[state.spotModal.photoIdx]"
                    class="carousel-img" :class="{ 'carousel-img-loaded': carouselImgLoaded }"
                    @load="carouselImgLoaded = true" @error="carouselImgLoaded = true" alt="" />
+              <!-- Link badge + tap hint (art spot only) -->
+              <a v-if="state.spotModal.opt.links?.[state.spotModal.photoIdx]"
+                 :href="state.spotModal.opt.links[state.spotModal.photoIdx]"
+                 target="_blank" rel="noopener noreferrer"
+                 class="carousel-link-badge" @click.stop>
+                <span class="tap-pulse"></span>
+                🔗
+              </a>
               <button v-if="state.spotModal.photoIdx > 0"
                       class="carousel-arrow carousel-arrow-l" @click.stop="prevPhoto">‹</button>
               <button v-if="state.spotModal.photoIdx < state.spotModal.opt.photos.length - 1"
@@ -1148,19 +1157,39 @@ async function downloadResult() {
 /* ── Language Toggle ─────────────────────────────────────────── */
 .music-btn {
   position: fixed;
-  top: max(10px, env(safe-area-inset-top));
+  top: max(22px, calc(env(safe-area-inset-top) + 10px));
   left: max(14px, env(safe-area-inset-left));
   z-index: 70;
-  width: 30px; height: 30px; border-radius: 50%;
+  width: 40px; height: 40px; border-radius: 50%;
   border: 2px solid rgba(107,78,42,.35);
   background: rgba(255,255,255,.97);
-  cursor: pointer; font-size: 16px; line-height: 1;
+  cursor: pointer; font-size: 20px; line-height: 1;
   display: flex; align-items: center; justify-content: center;
   padding: 0;
   box-shadow: 0 2px 7px rgba(0,0,0,.22);
   transition: transform .14s ease;
 }
 .music-btn:hover { transform: scale(1.1); }
+.carousel-link-badge {
+  position: absolute; top: 10px; left: 10px;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,.92);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; text-decoration: none; z-index: 5;
+  box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  transition: transform .14s ease;
+}
+.carousel-link-badge:hover { transform: scale(1.12); }
+.tap-pulse {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: rgba(201,150,46,.35);
+  animation: tapPulse 1.6s ease-out infinite;
+}
+@keyframes tapPulse {
+  0%   { transform: scale(1); opacity: .7; }
+  70%  { transform: scale(1.9); opacity: 0; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
 .lang-bar {
   position: fixed;
   top: max(10px, env(safe-area-inset-top));
