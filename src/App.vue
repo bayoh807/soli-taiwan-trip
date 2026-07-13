@@ -302,7 +302,7 @@ let shownResultModal = false
 // ─── Computed ─────────────────────────────────────────────────────────────────
 const sceneCount   = computed(() => state.unlocked >= 4 ? 5 : 4)
 const done         = computed(() => state.unlocked >= 4)
-const leftVisible  = computed(() => state.cur >= 2 && state.cur < 4 && !!state.sel[state.cur])
+const leftVisible  = computed(() => state.cur >= 2 && state.cur < 4)
 const rightVisible = computed(() => state.cur >= 1 && state.cur < 4 && !!state.sel[state.cur])
 
 const steps = computed(() => [
@@ -525,11 +525,16 @@ function closeModal() {
   if (a) setTimeout(a, 380)
 }
 
-// ─── HUD flash on scene navigation ───────────────────────────────────────────
+// ─── HUD reveal + flash on scene navigation ──────────────────────────────────
+const hudShown    = reactive([false, false, false, false])
 const hudFlashKeys = reactive([0, 0, 0, 0])
 watch(() => state.cur, (cur) => {
-  const prev = cur - 1
-  if (prev >= 1 && prev <= 3 && state.sel[prev]) hudFlashKeys[prev]++
+  for (let prev = 1; prev < cur && prev <= 3; prev++) {
+    if (state.sel[prev] && !hudShown[prev]) {
+      hudShown[prev] = true
+      hudFlashKeys[prev]++
+    }
+  }
 })
 
 // ─── Arrow position (below panel) ────────────────────────────────────────────
@@ -637,11 +642,11 @@ async function downloadResult() {
   <div class="hud">
     <template v-for="(st, i) in steps" :key="i">
       <div class="hud-node">
-        <img v-if="st.isDone && st.alienImg"
+        <img v-if="hudShown[i] && st.alienImg"
              :key="'a' + i + hudFlashKeys[i]"
              :src="st.alienImg" class="hud-alien-img"
              :class="{ 'hud-flash': hudFlashKeys[i] > 0 }" />
-        <div v-else :style="hudCircleStyle(st.isDone)">{{ st.isDone ? '✓' : String(i+1) }}</div>
+        <div v-else :style="hudCircleStyle(st.isDone && !st.alienImg)">{{ (st.isDone && !st.alienImg) ? '✓' : String(i+1) }}</div>
       </div>
       <div v-if="i < steps.length - 1" class="hud-sep"></div>
     </template>
