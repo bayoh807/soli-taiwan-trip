@@ -371,6 +371,7 @@ let scene4JumpDelay  = null
 let shownResultModal = false
 let shownNoonModal   = false
 let scene4Blob       = null  // pre-generated screenshot blob
+const carouselImgLoaded = ref(false)
 
 // ─── Computed ─────────────────────────────────────────────────────────────────
 const sceneCount   = computed(() => state.unlocked >= 4 ? 5 : 4)
@@ -608,9 +609,11 @@ function select(stage, key) {
 }
 function openSpotDetail(stage, opt) {
   if (!opt.isActive) return
+  carouselImgLoaded.value = false
   state.spotModal = { stage, opt, viewOnly: false, photoIdx: 0 }
 }
 function openSpotDetailViewOnly(p) {
+  carouselImgLoaded.value = false
   state.spotModal = { stage: p.stage, opt: { ...p, isActive: false }, viewOnly: true, photoIdx: 0 }
 }
 function closeSpotModal() { state.spotModal = null }
@@ -626,11 +629,17 @@ function confirmSpot() {
   }
 }
 function prevPhoto() {
-  if (state.spotModal && state.spotModal.photoIdx > 0) state.spotModal.photoIdx--
+  if (state.spotModal && state.spotModal.photoIdx > 0) {
+    carouselImgLoaded.value = false
+    state.spotModal.photoIdx--
+  }
 }
 function nextPhoto() {
   const m = state.spotModal
-  if (m && m.photoIdx < (m.opt.photos?.length ?? 1) - 1) state.spotModal.photoIdx++
+  if (m && m.photoIdx < (m.opt.photos?.length ?? 1) - 1) {
+    carouselImgLoaded.value = false
+    m.photoIdx++
+  }
 }
 
 function makeSpots(stage, arrOrRef) {
@@ -688,11 +697,14 @@ function hudCircleStyle(isDone) {
 function preloadImages(srcs) {
   srcs.forEach(src => { if (src) { const img = new Image(); img.src = src } })
 }
+const allS1Photos = S1.flatMap(s => s.photos)
+const allS2Photos = S2.flatMap(s => s.photos)
+const allS3Photos = S3.flatMap(s => s.photos)
 const sceneAssets = [
   [shipBg, soliChar],
-  [mapBg, girlSprite, arrowLeft, alien1],
-  [arrowRight, alien2],
-  [alien3, jumpSprite],
+  [mapBg, girlSprite, arrowLeft, alien1, ...allS1Photos],
+  [arrowRight, alien2, ...allS2Photos],
+  [alien3, jumpSprite, ...allS3Photos],
   [],
 ]
 watch(() => state.cur, (cur) => {
@@ -1029,8 +1041,10 @@ async function downloadResult() {
           <!-- Photo Carousel -->
           <div v-if="state.spotModal.opt.photos?.length" class="spot-carousel">
             <div class="carousel-track">
+              <div v-if="!carouselImgLoaded" class="carousel-skeleton"></div>
               <img :src="state.spotModal.opt.photos[state.spotModal.photoIdx]"
-                   class="carousel-img" alt="" />
+                   class="carousel-img" :class="{ 'carousel-img-loaded': carouselImgLoaded }"
+                   @load="carouselImgLoaded = true" @error="carouselImgLoaded = true" alt="" />
               <button v-if="state.spotModal.photoIdx > 0"
                       class="carousel-arrow carousel-arrow-l" @click.stop="prevPhoto">‹</button>
               <button v-if="state.spotModal.photoIdx < state.spotModal.opt.photos.length - 1"
@@ -1501,6 +1515,18 @@ async function downloadResult() {
 .carousel-img {
   display: block; width: 100%; height: clamp(200px, 52vw, 300px);
   object-fit: cover; border-radius: 12px;
+  opacity: 0; transition: opacity .25s ease;
+}
+.carousel-img.carousel-img-loaded { opacity: 1; }
+.carousel-skeleton {
+  position: absolute; inset: 0; border-radius: 12px;
+  background: linear-gradient(90deg, #e8dfc4 25%, #f5edd9 50%, #e8dfc4 75%);
+  background-size: 200% 100%;
+  animation: skelShimmer 1.2s ease-in-out infinite;
+}
+@keyframes skelShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 .carousel-arrow {
   position: absolute; top: 50%; transform: translateY(-50%);
