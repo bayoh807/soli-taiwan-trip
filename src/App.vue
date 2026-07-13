@@ -354,23 +354,30 @@ const girlBubbleLines = computed(() => {
   return { 1:[t.girl1Pre], 2:[t.girl2Pre], 3:[t.girl3Pre] }[c] || ['']
 })
 
-// Scene 4 girl col ref — jumpY animation applied via DOM (bubble moves with char)
-const scene4GirlColRef = ref(null)
+// Scene 4 girl col + sprite refs — animations reset via DOM (no key remount → no flash)
+const scene4GirlColRef    = ref(null)
+const scene4GirlSpriteRef = ref(null)
 watch(() => state.jumpSeq, () => {
-  const el = scene4GirlColRef.value
-  if (!el) return
-  el.style.animation = 'none'
-  void el.offsetHeight
-  el.style.animation = 'jumpY .62s ease-in-out'
+  const col    = scene4GirlColRef.value
+  const sprite = scene4GirlSpriteRef.value
+  if (col) {
+    col.style.animation = 'none'
+    void col.offsetHeight
+    col.style.animation = 'jumpY .62s ease-in-out'
+  }
+  if (sprite) {
+    sprite.style.animation = 'none'
+    void sprite.offsetHeight
+    sprite.style.animation = 'frameSwap .62s step-end'
+  }
 })
 
-// Sprite style — scene 4 girl: frameSwap only (jumpY on col wrapper now)
+// Sprite style — scene 4 girl (animation controlled via DOM ref above)
 const scene4SpriteFrameStyle = computed(() => ({
   width:'clamp(72px,10vw,118px)', aspectRatio:'356 / 611',
   backgroundImage:`url('${jumpSprite}')`,
   backgroundPosition:'0% 0', backgroundSize:'200% 100%', backgroundRepeat:'no-repeat',
   filter:'drop-shadow(0 8px 6px rgba(10,30,60,.35))',
-  animation: state.jumping ? 'frameSwap .62s step-end' : 'none',
 }))
 
 // Sprite style — kept for reference (unused in template after refactor)
@@ -716,7 +723,7 @@ async function downloadResult() {
       <div v-if="state.scene4Entered" class="scene4-char-slot">
         <div ref="scene4GirlColRef" class="char-col">
           <div :key="lang + '4g'" class="speech-bubble" :ref="el => el && initBubble(el, [tr.girl4Bubble], { startDelay: 1350 })"></div>
-          <div :key="state.jumpSeq" :style="scene4SpriteFrameStyle"></div>
+          <div ref="scene4GirlSpriteRef" :style="scene4SpriteFrameStyle"></div>
         </div>
       </div>
     </Transition>
@@ -1116,6 +1123,24 @@ async function downloadResult() {
   filter: drop-shadow(0 5px 6px rgba(10,30,60,.35)) drop-shadow(0 0 18px rgba(255,220,80,.9));
 }
 .arrow-btn:active { transform: translateY(1px) scale(.96); animation: none; }
+@keyframes jumpY {
+  0%, 100% { transform: translateY(0); }
+  40%      { transform: translateY(-40px); }
+  60%      { transform: translateY(-35px); }
+}
+@keyframes frameSwap {
+  0%  { background-position-x: 0%; }
+  50% { background-position-x: 100%; }
+}
+@keyframes wave3 {
+  0%      { background-position-x: 0%; }
+  33.33%  { background-position-x: 50%; }
+  66.67%  { background-position-x: 100%; }
+}
+@keyframes arrowpulse {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
 @keyframes arrowGlow {
   0%,100% { filter: drop-shadow(0 5px 6px rgba(10,30,60,.35)) drop-shadow(0 0 4px rgba(255,220,80,.2)); }
   50%      { filter: drop-shadow(0 5px 6px rgba(10,30,60,.35)) drop-shadow(0 0 18px rgba(255,220,80,.85)); }
