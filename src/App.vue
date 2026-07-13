@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, computed, nextTick } from 'vue'
+import { ref, reactive, computed, nextTick, onMounted, watch } from 'vue'
 import html2canvas from 'html2canvas'
 import shipBg    from '../assets/ship-bg.jpeg'
 import mapBg     from '../assets/map-bg.png'
@@ -7,23 +7,87 @@ import jumpSprite from '../assets/jump-sprite.png'
 import arrowLeft  from '../assets/arrow-left.png'
 import arrowRight from '../assets/arrow-right.png'
 import soliChar   from '../assets/soli-char.png'
+import girlSprite from '../assets/girl-sprite.png'
 import alien1     from '../assets/alien-1.png'
 import alien2     from '../assets/alien-2.png'
 import alien3     from '../assets/alien-3.png'
 
+// ─── Speech Bubble ────────────────────────────────────────────────────────────
+function SpeechBubble(el, options) {
+  const opt = Object.assign(
+    { speed: 95, holdBetween: 1500, clearGap: 320, startDelay: 260, loop: false },
+    options || {}
+  )
+  el.innerHTML =
+    '<span class="sb-text"></span>' +
+    '<span class="sb-caret"></span>' +
+    '<span class="sb-tail-border"></span>' +
+    '<span class="sb-tail-fill"></span>'
+  const textEl  = el.querySelector('.sb-text')
+  const caretEl = el.querySelector('.sb-caret')
+  let lines = parseLines(el.getAttribute('data-lines'))
+  let timer = null, alive = true
+
+  function parseLines(str) {
+    if (!str) return ['']
+    return str.split('|').map(s => s.trim()).filter(Boolean)
+  }
+  function setText(t, typing) {
+    textEl.textContent = t
+    caretEl.classList.toggle('sb-hidden', !typing)
+  }
+  function typeLine(idx) {
+    if (!alive) return
+    const line = lines[idx] || ''
+    let i = 0
+    setText('', true)
+    const step = () => {
+      if (!alive) return
+      i++
+      setText(line.slice(0, i), i < line.length)
+      if (i < line.length) { timer = setTimeout(step, opt.speed); return }
+      const isLast = idx >= lines.length - 1
+      if (isLast) {
+        if (opt.loop) { timer = setTimeout(() => start(), opt.holdBetween) }
+        else { el.classList.add('sb-done') }
+        return
+      }
+      timer = setTimeout(() => {
+        if (!alive) return
+        setText('', true)
+        timer = setTimeout(() => typeLine(idx + 1), opt.clearGap)
+      }, opt.holdBetween)
+    }
+    timer = setTimeout(step, opt.startDelay)
+  }
+  function start() { clearTimeout(timer); alive = true; el.classList.remove('sb-done'); typeLine(0) }
+  start()
+  return {
+    setLines(arr) { lines = Array.isArray(arr) ? arr : parseLines(arr); start() },
+    replay() { start() },
+    stop() { alive = false; clearTimeout(timer) },
+    el
+  }
+}
+function initBubble(el, lines, opts = {}) {
+  if (!el) return null
+  el.setAttribute('data-lines', Array.isArray(lines) ? lines.join('|') : lines)
+  return SpeechBubble(el, { loop: false, speed: 85, holdBetween: 700, clearGap: 300, ...opts })
+}
+
 // ─── i18n ─────────────────────────────────────────────────────────────────────
 function detectLang() {
-  const bl = (navigator.language || 'zh').toLowerCase()
+  const bl = (navigator.language || 'en').toLowerCase()
   if (bl.startsWith('ko')) return 'kr'
-  if (bl.startsWith('en')) return 'en'
-  return 'zh'
+  if (bl.startsWith('ja')) return 'ja'
+  return 'en'
 }
 const lang  = ref(detectLang())
-const LANGS = ['zh', 'en', 'kr']
+const LANGS = ['en', 'kr', 'ja']
 const I18N  = {
   zh: {
     depart:'出發', am:'早', noon:'中', pm:'晚',
-    stop1:'第一站 · 早上', stop2:'第二站 · 中午', stop3:'第三站 · 晚上',
+    stop1:'第一站', stop2:'第二站', stop3:'第三站',
     questTitle:'準備好開始\n你的台灣之旅了嗎？',
     questSub:'READY FOR YOUR TAIWAN ADVENTURE?',
     yesBtn:'YES 出發！', noBtn:'NO 再想想',
@@ -34,19 +98,19 @@ const I18N  = {
     confirmPick:'確認選擇', download:'📥 下載截圖',
     downloadHint:'下載圖片分享給 Justin 吧 📮',
     hint:'偷偷說…「NO」好像有點滑溜 😏', selected:'✓ 已選擇',
-    // modals
     mYesEmoji:'🎁', mYesTitle:'神秘禮盒 GET!',
-    mYesBody:'恭喜獲得「旅程通行證」\n以及 100 楓幣！\n\n你的台灣冒險正式展開～',
+    mYesBody:'恭喜獲得「越南禮盒」\n\n你的台灣冒險正式展開～',
     mYesBtn:'開啟旅程',
-    mNoonEmoji:'🌞', mNoonTitle:'中午行程決定了！',
-    mNoonBtn:'繼續選晚上',
+    mNoonEmoji:'🎇', mNoonTitle:'獲得神秘道具！',
+    mNoonBody:'🎇 🎇 🎇\n獲得火與夜的祝福',
+    mNoonBtn:'收入背包',
     mDoneEmoji:'🏆', mDoneTitle:'旅程完成！',
     mDoneBody:'你已選好台灣一日行程，\n準備出發了嗎？',
     mDoneBtn:'查看行程',
   },
   en: {
     depart:'Start', am:'AM', noon:'Noon', pm:'PM',
-    stop1:'Stop 1 · Morning', stop2:'Stop 2 · Noon', stop3:'Stop 3 · Evening',
+    stop1:'Stop 1', stop2:'Stop 2', stop3:'Stop 3',
     questTitle:'Ready for your\nTaiwan adventure?',
     questSub:'READY FOR YOUR TAIWAN ADVENTURE?',
     yesBtn:"YES, Let's Go!", noBtn:'NO, hmm...',
@@ -58,17 +122,18 @@ const I18N  = {
     downloadHint:'Download & share with Justin 📮',
     hint:"Psst… the NO button is a bit slippery 😏", selected:'✓ Selected',
     mYesEmoji:'🎁', mYesTitle:'Mystery Box GET!',
-    mYesBody:'You received a "Journey Pass"\n+100 Maple Coins!\n\nYour Taiwan adventure begins～',
+    mYesBody:'You received a "Vietnam Gift Box"!\n\nYour Taiwan adventure begins～',
     mYesBtn:'Start Journey',
-    mNoonEmoji:'🌞', mNoonTitle:'Noon stop locked in!',
-    mNoonBtn:'Pick evening',
+    mNoonEmoji:'🎇', mNoonTitle:'Mysterious Item Found!',
+    mNoonBody:'🎇 🎇 🎇\nBlessing of Fire and Night received',
+    mNoonBtn:'Add to Bag',
     mDoneEmoji:'🏆', mDoneTitle:'Journey Complete!',
     mDoneBody:'Your Taiwan day trip is planned!\nReady to go?',
     mDoneBtn:'View itinerary',
   },
   kr: {
     depart:'출발', am:'아침', noon:'점심', pm:'저녁',
-    stop1:'1번째 · 아침', stop2:'2번째 · 점심', stop3:'3번째 · 저녁',
+    stop1:'1번째', stop2:'2번째', stop3:'3번째',
     questTitle:'대만 여행을\n시작할 준비가 됐나요?',
     questSub:'대만 어드벤처 준비 완료?',
     yesBtn:'YES, 출발!', noBtn:'NO, 글쎄...',
@@ -80,46 +145,101 @@ const I18N  = {
     downloadHint:'Justin에게 사진 공유하기 📮',
     hint:'잠깐... NO 버튼이 좀 미끄럽네요 😏', selected:'✓ 선택됨',
     mYesEmoji:'🎁', mYesTitle:'신비 상자 GET!',
-    mYesBody:'「여행 통행증」획득!\n+100 메이플 코인!\n\n대만 어드벤처 시작～',
+    mYesBody:'「베트남 선물 상자」획득!\n\n대만 어드벤처 시작～',
     mYesBtn:'여행 시작',
-    mNoonEmoji:'🌞', mNoonTitle:'점심 장소 확정!',
-    mNoonBtn:'저녁 선택하기',
+    mNoonEmoji:'🎇', mNoonTitle:'신비 아이템 획득!',
+    mNoonBody:'🎇 🎇 🎇\n불과 밤의 축복을 받았다',
+    mNoonBtn:'가방에 넣기',
     mDoneEmoji:'🏆', mDoneTitle:'여행 완료!',
     mDoneBody:'대만 하루 여행 계획 완성!\n출발할 준비 됐나요?',
     mDoneBtn:'일정 보기',
-  }
+  },
+  ja: {
+    depart:'出発', am:'朝', noon:'昼', pm:'夜',
+    stop1:'第1スポット', stop2:'第2スポット', stop3:'第3スポット',
+    questTitle:'台湾の旅へ\n出発する準備はできた？',
+    questSub:'READY FOR YOUR TAIWAN ADVENTURE?',
+    yesBtn:'YES 出発！', noBtn:'NO まだかな…',
+    pick:'目的地を選ぼう', pickLast:'最後の場所を選ぼう',
+    locked1:'🔒 最初に戻って質問に答えてね',
+    locked:'🔒 前のステージをクリアしてね',
+    complete:'🏝️ 台湾の旅 · COMPLETE',
+    confirmPick:'確認', download:'📥 スクリーンショット保存',
+    downloadHint:'Justinに画像を送ってね 📮',
+    hint:'「NO」ボタン、なんか滑ってる 😏', selected:'✓ 選択済み',
+    mYesEmoji:'🎁', mYesTitle:'ミステリーボックス GET!',
+    mYesBody:'「ベトナムギフトボックス」ゲット！\n\n台湾アドベンチャーが始まる～',
+    mYesBtn:'旅を始める',
+    mNoonEmoji:'🎇', mNoonTitle:'神秘アイテム獲得！',
+    mNoonBody:'🎇 🎇 🎇\n火と夜の祝福を受け取った',
+    mNoonBtn:'バッグに入れる',
+    mDoneEmoji:'🏆', mDoneTitle:'旅完了！',
+    mDoneBody:'台湾一日旅行の計画完成！\n出発の準備はできた？',
+    mDoneBtn:'旅程を見る',
+  },
 }
-const tr = computed(() => I18N[lang.value])
-function cycleLang() {
-  const idx = LANGS.indexOf(lang.value)
-  lang.value = LANGS[(idx + 1) % LANGS.length]
-}
-const langFlag = computed(() => ({ zh:'🇹🇼', en:'🇺🇸', kr:'🇰🇷' }[lang.value]))
+const tr = computed(() => I18N[lang.value] ?? I18N.en)
 
 // ─── Spot Data ────────────────────────────────────────────────────────────────
 const S1 = [
   { key:'101',    emoji:'🏙️', name:'台北 101',  sub:'SKYLINE TOWER',
-    desc:'508 公尺的世界地標，頂樓觀景台 360° 俯瞰台北全景，日夜各有絕美風貌。' },
+    desc:'508 公尺的世界地標，頂樓觀景台 360° 俯瞰台北全景，日夜各有絕美風貌。',
+    photos:[
+      'https://picsum.photos/seed/tp101a/480/280',
+      'https://picsum.photos/seed/tp101b/480/280',
+    ]},
   { key:'jiufen', emoji:'🏮', name:'九份老街',   sub:'LANTERN TOWN',
-    desc:'山城老街掛滿紅燈籠，傳說是宮崎駿《神隱少女》的靈感來源，霧雨中格外有詩意。' },
+    desc:'山城老街掛滿紅燈籠，傳說是宮崎駿《神隱少女》的靈感來源，霧雨中格外有詩意。',
+    photos:[
+      'https://picsum.photos/seed/jiufen1/480/280',
+      'https://picsum.photos/seed/jiufen2/480/280',
+    ]},
   { key:'yehliu', emoji:'🪨', name:'野柳女王頭', sub:'SEA ROCKS',
-    desc:'大海與風雨共同雕刻的地質奇觀，女王頭造型獨特，每年吸引百萬旅人朝聖。' },
+    desc:'大海與風雨共同雕刻的地質奇觀，女王頭造型獨特，每年吸引百萬旅人朝聖。',
+    photos:[
+      'https://picsum.photos/seed/yehliu1/480/280',
+      'https://picsum.photos/seed/yehliu2/480/280',
+    ]},
 ]
 const S2 = [
   { key:'sunmoon',  emoji:'🚣', name:'日月潭',   sub:'SUN MOON LAKE',
-    desc:'台灣最大高山湖泊，清晨薄霧如仙境，可搭船遊湖或騎自行車欣賞環湖美景。' },
+    desc:'台灣最大高山湖泊，清晨薄霧如仙境，可搭船遊湖或騎自行車欣賞環湖美景。',
+    photos:[
+      'https://picsum.photos/seed/sunmoon1/480/280',
+      'https://picsum.photos/seed/sunmoon2/480/280',
+    ]},
   { key:'qingjing', emoji:'🐑', name:'清境農場', sub:'GREEN MEADOWS',
-    desc:'海拔 1748 公尺的高山草原，近距離接觸綿羊，遠眺合歡山群峰，雲霧繚繞令人心醉。' },
+    desc:'海拔 1748 公尺的高山草原，近距離接觸綿羊，遠眺合歡山群峰，雲霧繚繞令人心醉。',
+    photos:[
+      'https://picsum.photos/seed/qingjing1/480/280',
+      'https://picsum.photos/seed/qingjing2/480/280',
+    ]},
   { key:'gaomei',   emoji:'🌅', name:'高美濕地', sub:'SUNSET WETLAND',
-    desc:'台中最美夕陽觀賞地，退潮時水面如鏡，倒映天空與風車，是攝影師的天堂。' },
+    desc:'台中最美夕陽觀賞地，退潮時水面如鏡，倒映天空與風車，是攝影師的天堂。',
+    photos:[
+      'https://picsum.photos/seed/gaomei1/480/280',
+      'https://picsum.photos/seed/gaomei2/480/280',
+    ]},
 ]
 const S3 = [
   { key:'kenting', emoji:'🏖️', name:'墾丁海灘', sub:'SOUTH BEACH',
-    desc:'台灣最南端熱帶天堂，澄澈海水白沙灘，夏日衝浪浮潛，夜晚逛夜市，每天都精彩。' },
+    desc:'台灣最南端熱帶天堂，澄澈海水白沙灘，夏日衝浪浮潛，夜晚逛夜市，每天都精彩。',
+    photos:[
+      'https://picsum.photos/seed/kenting1/480/280',
+      'https://picsum.photos/seed/kenting2/480/280',
+    ]},
   { key:'tainan',  emoji:'🏯', name:'台南古都', sub:'OLD CAPITAL',
-    desc:'台灣最古老城市，赤崁樓、安平古堡等百年古蹟，加上牛肉湯與蝦仁飯的小吃天堂。' },
+    desc:'台灣最古老城市，赤崁樓、安平古堡等百年古蹟，加上牛肉湯與蝦仁飯的小吃天堂。',
+    photos:[
+      'https://picsum.photos/seed/tainan1/480/280',
+      'https://picsum.photos/seed/tainan2/480/280',
+    ]},
   { key:'love',    emoji:'🚤', name:'高雄愛河', sub:'LOVE RIVER',
-    desc:'高雄市中心的浪漫愛河，夜晚燈光倒映水面，搭船夜遊是最浪漫的約會方式。' },
+    desc:'高雄市中心的浪漫愛河，夜晚燈光倒映水面，搭船夜遊是最浪漫的約會方式。',
+    photos:[
+      'https://picsum.photos/seed/loveharbor1/480/280',
+      'https://picsum.photos/seed/loveharbor2/480/280',
+    ]},
 ]
 
 // ─── State ────────────────────────────────────────────────────────────────────
@@ -136,6 +256,7 @@ const state = reactive({
   jumping:       false,
   jumpSeq:       0,
   scene4Entered: false,
+  girlExcited:   false,
 })
 
 const worldEl  = ref(null)
@@ -158,11 +279,11 @@ const steps = computed(() => [
   { label: tr.value.noon,   isDone: !!state.sel[2], alienImg: alien2 },
   { label: tr.value.pm,     isDone: !!state.sel[3], alienImg: alien3 },
 ])
-const picks = computed(() =>
-  [S1.find(o => o.key === state.sel[1]),
-   S2.find(o => o.key === state.sel[2]),
-   S3.find(o => o.key === state.sel[3])].filter(Boolean)
-)
+const picks = computed(() => [
+  { stage: 1, spot: S1.find(o => o.key === state.sel[1]) },
+  { stage: 2, spot: S2.find(o => o.key === state.sel[2]) },
+  { stage: 3, spot: S3.find(o => o.key === state.sel[3]) },
+].filter(o => o.spot).map(o => ({ ...o.spot, stage: o.stage })))
 
 // NO button
 const noBaseStyle = {
@@ -187,7 +308,37 @@ const noWrapStyle = computed(() =>
     : { position:'relative', display:'inline-flex', alignItems:'center' }
 )
 
-// Sprite styles — girl
+// Girl sprite background-image (Vite hashes asset URL, must be inline style)
+const girlBgStyle = computed(() => ({ backgroundImage: `url('${girlSprite}')` }))
+
+// Scene 1-3 girl bubble — key triggers remount on scene/state change
+const girlBubbleKey   = computed(() => `${state.cur}-${state.girlExcited}`)
+const girlBubbleLines = computed(() => {
+  const exc = state.girlExcited, c = state.cur
+  if (exc) return { 1:['好期待！'], 2:['走吧！走吧'], 3:['❤️'] }[c] || ['']
+  return { 1:['早上要去哪裡呢？'], 2:['要去哪裡玩呢？'], 3:['台灣的晚上在幹嘛呢？'] }[c] || ['']
+})
+
+// Scene 4 girl col ref — jumpY animation applied via DOM (bubble moves with char)
+const scene4GirlColRef = ref(null)
+watch(() => state.jumpSeq, () => {
+  const el = scene4GirlColRef.value
+  if (!el) return
+  el.style.animation = 'none'
+  void el.offsetHeight
+  el.style.animation = 'jumpY .62s ease-in-out'
+})
+
+// Sprite style — scene 4 girl: frameSwap only (jumpY on col wrapper now)
+const scene4SpriteFrameStyle = computed(() => ({
+  width:'clamp(72px,10vw,118px)', aspectRatio:'356 / 611',
+  backgroundImage:`url('${jumpSprite}')`,
+  backgroundPosition:'0% 0', backgroundSize:'200% 100%', backgroundRepeat:'no-repeat',
+  filter:'drop-shadow(0 8px 6px rgba(10,30,60,.35))',
+  animation: state.jumping ? 'frameSwap .62s step-end' : 'none',
+}))
+
+// Sprite style — kept for reference (unused in template after refactor)
 const spriteStyle = computed(() => ({
   width:'clamp(72px,10vw,118px)', aspectRatio:'356 / 611',
   backgroundImage:`url('${jumpSprite}')`,
@@ -195,8 +346,6 @@ const spriteStyle = computed(() => ({
   filter:'drop-shadow(0 8px 6px rgba(10,30,60,.35))',
   animation: state.jumping ? 'jumpY .62s ease-in-out, frameSwap .62s step-end' : 'none',
 }))
-
-// Scene 4 girl uses same spriteStyle as scenes 1-3 (driven by state.jumping)
 
 // Boy sprite
 const soliSpriteStyle = {
@@ -207,10 +356,7 @@ const soliSpriteStyle = {
   filter:'drop-shadow(0 8px 8px rgba(10,30,60,.3))',
   animation:'wave3 1s step-end infinite',
 }
-const soliScene0Style = {
-  ...soliSpriteStyle,
-  width:'clamp(110px,24vw,160px)',
-}
+const soliScene0Style = { ...soliSpriteStyle }
 
 // ─── Methods ──────────────────────────────────────────────────────────────────
 function scrollToScene(i) {
@@ -230,9 +376,9 @@ function onWorldScroll(e) {
   const cur = Math.round(c.scrollLeft / c.clientWidth)
   if (cur !== state.cur) {
     state.cur = cur
+    state.girlExcited = !!state.sel[cur]
     triggerJump()
     if (cur === 4) {
-      // entrance slide-in, then jump loop starts after animation completes (~1.3s)
       setTimeout(() => { state.scene4Entered = true }, 100)
       scene4JumpDelay = setTimeout(() => {
         if (state.cur === 4 && !scene4Interval) {
@@ -283,7 +429,6 @@ function onYes() {
 }
 function onNo() {
   const el = noBtnEl.value
-  // always measure fresh so size is accurate
   const w = (el ? el.offsetWidth  : 0) || 150
   const h = (el ? el.offsetHeight : 0) || 50
   if (!state.noSize) state.noSize = { w, h }
@@ -297,15 +442,18 @@ function onNo() {
 }
 
 function select(stage, key) {
-  if (state.unlocked !== stage) return
+  if (state.unlocked < stage) return
   state.sel = { ...state.sel, [stage]: key }
-  if (stage === 1) state.unlocked = 2
-  else if (stage === 2) state.unlocked = 3
-  else if (stage === 3) state.unlocked = 4
+  if (stage === 1 && state.unlocked < 2) state.unlocked = 2
+  else if (stage === 2 && state.unlocked < 3) state.unlocked = 3
+  else if (stage === 3 && state.unlocked < 4) state.unlocked = 4
 }
 function openSpotDetail(stage, opt) {
   if (!opt.isActive) return
-  state.spotModal = { stage, opt }
+  state.spotModal = { stage, opt, viewOnly: false, photoIdx: 0 }
+}
+function openSpotDetailViewOnly(p) {
+  state.spotModal = { stage: p.stage, opt: { ...p, isActive: false }, viewOnly: true, photoIdx: 0 }
 }
 function closeSpotModal() { state.spotModal = null }
 function confirmSpot() {
@@ -313,22 +461,30 @@ function confirmSpot() {
   const { stage, opt } = state.spotModal
   closeSpotModal()
   select(stage, opt.key)
+  setTimeout(() => { state.girlExcited = true }, 300)
   if (stage === 2) {
     setTimeout(() => {
       state.modal = {
         emoji: tr.value.mNoonEmoji,
         title: tr.value.mNoonTitle,
-        body:  opt.name,
+        body:  tr.value.mNoonBody,
         btn:   tr.value.mNoonBtn,
       }
     }, 200)
   }
 }
+function prevPhoto() {
+  if (state.spotModal && state.spotModal.photoIdx > 0) state.spotModal.photoIdx--
+}
+function nextPhoto() {
+  const m = state.spotModal
+  if (m && m.photoIdx < (m.opt.photos?.length ?? 1) - 1) state.spotModal.photoIdx++
+}
 
 function makeSpots(stage, arr) {
-  const sel      = state.sel[stage]
-  const isActive = state.unlocked === stage
-  return arr.map(o => ({ ...o, isSel: sel===o.key, isActive, isDisabled: !isActive && sel!==o.key }))
+  const sel        = state.sel[stage]
+  const isUnlocked = state.unlocked >= stage
+  return arr.map(o => ({ ...o, isSel: sel===o.key, isActive: isUnlocked, isDisabled: !isUnlocked }))
 }
 
 function closeModal() {
@@ -347,6 +503,12 @@ function hudCircleStyle(isDone) {
     color: isDone ? '#fff' : '#8a6a3a',
   }
 }
+
+onMounted(() => {
+  [mapBg, jumpSprite, arrowLeft, arrowRight, soliChar, girlSprite, alien1, alien2, alien3].forEach(src => {
+    const img = new Image(); img.src = src
+  })
+})
 
 async function downloadResult() {
   try {
@@ -398,7 +560,11 @@ async function downloadResult() {
   </div>
 
   <!-- ── Language Toggle ──────────────────────────────────────── -->
-  <button class="lang-toggle" @click="cycleLang">{{ langFlag }}</button>
+  <div class="lang-bar">
+    <button :class="['lang-icon', { active: lang === 'en' }]" @click="lang = 'en'" title="English">🇺🇸</button>
+    <button :class="['lang-icon', { active: lang === 'kr' }]" @click="lang = 'kr'" title="한국어">🇰🇷</button>
+    <button :class="['lang-icon', { active: lang === 'ja' }]" @click="lang = 'ja'" title="日本語">🇯🇵</button>
+  </div>
 
   <!-- ── Progress HUD ─────────────────────────────────────────── -->
   <div class="hud">
@@ -414,7 +580,12 @@ async function downloadResult() {
   <!-- ── Girl (scenes 1–3) ─────────────────────────────────────── -->
   <Transition name="fade-girl">
     <div v-if="state.cur > 0 && state.cur < 4 && state.girlIn" class="char-wrap" aria-hidden="true">
-      <div :key="state.jumpSeq" :style="spriteStyle"></div>
+      <div class="char-col">
+        <div :key="girlBubbleKey" class="speech-bubble"
+             :ref="el => el && initBubble(el, girlBubbleLines.value)"></div>
+        <div :class="['girl-char', { 'is-excited': state.girlExcited }]"
+             :style="girlBgStyle"></div>
+      </div>
     </div>
   </Transition>
 
@@ -422,12 +593,18 @@ async function downloadResult() {
   <div v-if="state.cur === 4 && state.girlIn" class="scene4-chars" aria-hidden="true">
     <Transition name="girl4">
       <div v-if="state.scene4Entered" class="scene4-char-slot">
-        <div :key="state.jumpSeq" :style="spriteStyle"></div>
+        <div ref="scene4GirlColRef" class="char-col">
+          <div class="speech-bubble" :ref="el => el && initBubble(el, ['好開心！'])"></div>
+          <div :key="state.jumpSeq" :style="scene4SpriteFrameStyle"></div>
+        </div>
       </div>
     </Transition>
     <Transition name="boy4">
       <div v-if="state.scene4Entered" class="scene4-char-slot">
-        <div :style="soliSpriteStyle"></div>
+        <div class="char-col">
+          <div class="speech-bubble" :ref="el => el && initBubble(el, ['我很期待一起出去玩！'])"></div>
+          <div :style="soliSpriteStyle"></div>
+        </div>
       </div>
     </Transition>
   </div>
@@ -476,7 +653,10 @@ async function downloadResult() {
       </div>
       <!-- Boy (scene 0) -->
       <div class="scene-0-char" :style="{ opacity: state.started ? 0 : 1, transition:'opacity 0.5s ease' }" aria-hidden="true">
-        <div :style="soliScene0Style"></div>
+        <div class="char-col">
+          <div class="speech-bubble" :ref="el => el && initBubble(el, ['歡迎來到台灣', '期待在台灣見到你'])"></div>
+          <div :style="soliScene0Style"></div>
+        </div>
       </div>
     </section>
 
@@ -570,9 +750,12 @@ async function downloadResult() {
           </div>
           <div class="panel-body">
             <div class="picks-list">
-              <div v-for="p in picks" :key="p.key" class="pick-item">
+              <div v-for="p in picks" :key="p.key"
+                   class="pick-item pick-item-clickable"
+                   @click="openSpotDetailViewOnly(p)">
                 <span class="pick-emoji">{{ p.emoji }}</span>
                 <span class="pick-name">{{ p.name }}</span>
+                <span class="pick-arr">›</span>
               </div>
             </div>
             <div class="result-actions">
@@ -596,8 +779,24 @@ async function downloadResult() {
           <h3 class="spot-popup-name">{{ state.spotModal.opt.name }}</h3>
           <p  class="spot-popup-sub">{{ state.spotModal.opt.sub }}</p>
           <p  class="spot-popup-desc">{{ state.spotModal.opt.desc }}</p>
+          <!-- Photo Carousel -->
+          <div v-if="state.spotModal.opt.photos?.length" class="spot-carousel">
+            <div class="carousel-track">
+              <img :src="state.spotModal.opt.photos[state.spotModal.photoIdx]"
+                   class="carousel-img" alt="" />
+              <button v-if="state.spotModal.photoIdx > 0"
+                      class="carousel-arrow carousel-arrow-l" @click.stop="prevPhoto">‹</button>
+              <button v-if="state.spotModal.photoIdx < state.spotModal.opt.photos.length - 1"
+                      class="carousel-arrow carousel-arrow-r" @click.stop="nextPhoto">›</button>
+            </div>
+            <div class="carousel-dots">
+              <span v-for="(_, i) in state.spotModal.opt.photos" :key="i"
+                    :class="['carousel-dot', { active: i === state.spotModal.photoIdx }]"
+                    @click.stop="state.spotModal.photoIdx = i"></span>
+            </div>
+          </div>
         </div>
-        <div class="spot-popup-footer">
+        <div v-if="!state.spotModal.viewOnly" class="spot-popup-footer">
           <button class="spot-popup-confirm" @click="confirmSpot">{{ tr.confirmPick }}</button>
         </div>
       </div>
@@ -637,26 +836,30 @@ async function downloadResult() {
 }
 
 /* ── Language Toggle ─────────────────────────────────────────── */
-.lang-toggle {
+.lang-bar {
   position: fixed;
   top: max(10px, env(safe-area-inset-top));
   right: max(14px, env(safe-area-inset-right));
   z-index: 70;
-  background: rgba(255,255,255,.88);
-  border: 1.5px solid #c9a96e;
-  border-radius: 20px;
-  padding: 5px 14px;
-  font-size: clamp(11px, 2.8vw, 13px);
-  color: #6b4e2a;
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  font-family: 'ZCOOL KuaiLe', 'Baloo 2', sans-serif;
-  white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(60,40,10,.18);
-  transition: background .15s ease;
+  display: flex; gap: 5px;
 }
-.lang-toggle:hover { background: rgba(255,255,255,1); }
+.lang-icon {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.55);
+  background: rgba(255,255,255,.82);
+  cursor: pointer; font-size: 15px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 2px 6px rgba(60,40,10,.2);
+  transition: transform .14s ease, border-color .14s ease, box-shadow .14s ease;
+}
+.lang-icon.active {
+  border-color: #6b4e2a;
+  box-shadow: 0 2px 8px rgba(60,40,10,.35);
+  transform: scale(1.18);
+}
+.lang-icon:not(.active):hover { transform: scale(1.1); }
 
 /* ── Progress HUD ────────────────────────────────────────────── */
 .hud {
@@ -690,6 +893,9 @@ async function downloadResult() {
 }
 
 /* ── Characters ──────────────────────────────────────────────── */
+.char-col {
+  display: flex; flex-direction: column; align-items: center;
+}
 .char-wrap {
   position: fixed; left: 50%; transform: translateX(-50%);
   bottom: calc(max(12px, env(safe-area-inset-bottom)) + 4px);
@@ -699,13 +905,64 @@ async function downloadResult() {
   position: fixed; left: 50%; transform: translateX(-50%);
   bottom: calc(max(12px, env(safe-area-inset-bottom)) + 4px);
   z-index: 15; pointer-events: none;
-  display: flex; align-items: flex-end;
-  gap: clamp(72px, 10vw, 118px);
+  display: flex; align-items: flex-end; justify-content: center;
+  gap: clamp(40px, 8vw, 80px);
+  width: clamp(280px, 38vw, 420px);
 }
 .scene-0-char {
   position: fixed; left: 50%; transform: translateX(-50%);
   bottom: calc(max(12px, env(safe-area-inset-bottom)) + 4px);
   z-index: 15; pointer-events: none;
+}
+
+/* ── Speech Bubble ───────────────────────────────────────────── */
+.speech-bubble {
+  position: relative;
+  display: inline-block;
+  background: #f4f4f4;
+  border: 3px solid #96a7b3;
+  border-radius: 16px;
+  padding: 9px 16px 10px;
+  box-shadow: 0 4px 0 rgba(120,140,155,.5), 0 8px 14px rgba(10,30,60,.28);
+  animation: sb-bob 2.8s ease-in-out infinite;
+  margin-bottom: 6px;
+  pointer-events: none;
+  min-width: 6em;
+  text-align: center;
+}
+.speech-bubble .sb-text {
+  font-family: 'ZCOOL KuaiLe', system-ui, sans-serif;
+  font-size: clamp(13px, 2.6vw, 16px);
+  line-height: 1.35;
+  color: #e23b3b;
+  text-align: center;
+  white-space: nowrap;
+  min-height: 1.35em;
+  text-shadow: 0 1px 0 rgba(255,255,255,.8);
+  letter-spacing: 1px;
+}
+.speech-bubble .sb-caret {
+  display: inline-block;
+  width: 2px; height: 1em; margin-left: 2px;
+  background: #e23b3b; vertical-align: -2px;
+  animation: sb-caret .7s step-end infinite;
+}
+.speech-bubble .sb-caret.sb-hidden { display: none; }
+.speech-bubble.sb-done { animation: none; }
+.speech-bubble .sb-tail-border,
+.speech-bubble .sb-tail-fill {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  width: 0; height: 0;
+}
+.speech-bubble .sb-tail-border {
+  bottom: -11px;
+  border-left: 11px solid transparent; border-right: 11px solid transparent;
+  border-top: 12px solid #96a7b3;
+}
+.speech-bubble .sb-tail-fill {
+  bottom: -6px;
+  border-left: 8px solid transparent; border-right: 8px solid transparent;
+  border-top: 9px solid #f4f4f4;
 }
 
 /* ── Nav Arrows ──────────────────────────────────────────────── */
@@ -745,7 +1002,7 @@ async function downloadResult() {
 
 /* ── Panel ───────────────────────────────────────────────────── */
 .panel-wrap {
-  position: absolute; top: 50%; left: 50%;
+  position: absolute; top: 45%; left: 50%;
   transform: translate(-50%, -53%); z-index: 5;
 }
 .panel {
@@ -789,8 +1046,8 @@ async function downloadResult() {
   font-family: 'Baloo 2', sans-serif; letter-spacing: 1px;
 }
 .btn-row {
-  display: flex; gap: clamp(12px,4vw,22px);
-  justify-content: center; align-items: center; flex-wrap: wrap;
+  display: flex; gap: clamp(10px,3vw,22px);
+  justify-content: center; align-items: center; flex-wrap: nowrap;
 }
 .btn-yes {
   font-size: clamp(17px,4.2vw,22px); padding: 13px clamp(26px,6vw,42px);
@@ -855,8 +1112,17 @@ async function downloadResult() {
   padding: 10px 16px;
   box-shadow: inset 0 2px 0 #fff, 0 2px 5px rgba(90,60,20,.12);
 }
-.pick-emoji { font-size: 24px; }
-.pick-name { font-size: clamp(15px,3.6vw,18px); color: #3e2c10; }
+.pick-item-clickable {
+  cursor: pointer; transition: transform .13s ease, box-shadow .13s ease;
+}
+.pick-item-clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(90,60,20,.2), inset 0 2px 0 #fff;
+}
+.pick-item-clickable:active { transform: translateY(0); }
+.pick-emoji { font-size: 24px; flex: none; }
+.pick-name { font-size: clamp(15px,3.6vw,18px); color: #3e2c10; flex: 1; }
+.pick-arr { font-size: 20px; color: #b08a52; flex: none; line-height: 1; }
 .result-actions {
   display: flex; flex-direction: column; gap: 10px; margin-top: 16px; align-items: center;
 }
@@ -879,12 +1145,6 @@ async function downloadResult() {
   background: linear-gradient(#8be374,#358534);
   color: #fff; text-shadow: 0 1px 2px rgba(0,30,10,.4);
   box-shadow: 0 3px 0 #1d5323, 0 6px 14px rgba(0,30,10,.25), inset 0 1px 0 rgba(255,255,255,.5);
-}
-.result-btn-sh {
-  border: 2px solid #4272b4;
-  background: linear-gradient(#7aabf0,#2c5288);
-  color: #fff; text-shadow: 0 1px 2px rgba(0,20,60,.4);
-  box-shadow: 0 3px 0 #1e3d7a, 0 6px 14px rgba(10,30,80,.25), inset 0 1px 0 rgba(255,255,255,.4);
 }
 
 /* ── Spot Popup ──────────────────────────────────────────────── */
@@ -909,7 +1169,7 @@ async function downloadResult() {
   width: 32px; height: 32px; border-radius: 50%;
   background: rgba(95,69,38,.15); border: none; cursor: pointer;
   font-size: 16px; color: #6b4e2a; display: flex; align-items: center; justify-content: center;
-  transition: background .14s ease;
+  transition: background .14s ease; z-index: 2;
 }
 .spot-popup-x:hover { background: rgba(95,69,38,.28); }
 .spot-popup-hero {
@@ -922,7 +1182,38 @@ async function downloadResult() {
   margin: 0 0 12px; font-size: clamp(11px,2.6vw,13px);
   color: #ab8b58; font-family:'Baloo 2',sans-serif; letter-spacing:1px;
 }
-.spot-popup-desc { margin: 0; font-size: clamp(14px,3.4vw,16px); color: #5a3e18; line-height: 1.75; }
+.spot-popup-desc { margin: 0 0 16px; font-size: clamp(14px,3.4vw,16px); color: #5a3e18; line-height: 1.75; }
+
+/* ── Carousel ────────────────────────────────────────────────── */
+.spot-carousel { margin: 0 0 8px; }
+.carousel-track {
+  position: relative; border-radius: 12px; overflow: hidden;
+  background: #e8dfc4;
+}
+.carousel-img {
+  display: block; width: 100%; height: clamp(140px, 36vw, 220px);
+  object-fit: cover; border-radius: 12px;
+}
+.carousel-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(0,0,0,.42); border: none; cursor: pointer;
+  color: #fff; font-size: 22px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .14s ease;
+}
+.carousel-arrow:hover { background: rgba(0,0,0,.62); }
+.carousel-arrow-l { left: 8px; }
+.carousel-arrow-r { right: 8px; }
+.carousel-dots {
+  display: flex; justify-content: center; gap: 6px; margin-top: 8px;
+}
+.carousel-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #cfae74; cursor: pointer; transition: background .15s ease, transform .15s ease;
+}
+.carousel-dot.active { background: #5f4526; transform: scale(1.25); }
+
 .spot-popup-footer {
   padding: 14px 24px max(20px,env(safe-area-inset-bottom));
   border-top: 1px solid rgba(107,78,42,.2);
@@ -985,26 +1276,39 @@ async function downloadResult() {
 /* ── Scene 4 character entrances ─────────────────────────────── */
 .scene4-char-slot { display: flex; align-items: flex-end; }
 
-/* girl: slides in from right, drifts left to position */
 .girl4-enter-active {
   transition: transform 0.9s cubic-bezier(.15,1.1,.4,1), opacity 0.5s ease;
 }
 .girl4-enter-from { transform: translateX(60vw); opacity: 0; }
 
-/* boy: slides in from right, slightly delayed */
 .boy4-enter-active {
   transition: transform 0.9s cubic-bezier(.15,1.1,.4,1) 0.28s, opacity 0.5s ease 0.28s;
 }
 .boy4-enter-from { transform: translateX(120vw); opacity: 0; }
 
+/* ── Girl Character (scenes 1-3) ─────────────────────────────── */
+.girl-char {
+  width: clamp(72px, 10vw, 110px);
+  aspect-ratio: 355 / 614;
+  background: 0% 0 / 200% 100% no-repeat;
+  filter: drop-shadow(0 8px 6px rgba(10,30,60,.35));
+}
+.girl-char.is-excited { background-position-x: 100%; }
+
+/* ── Speech Bubble Keyframes ─────────────────────────────────── */
+@keyframes sb-bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+@keyframes sb-caret { 0%,50% { opacity:1 } 50.01%,100% { opacity:0 } }
+
 /* ── Mobile ──────────────────────────────────────────────────── */
 @media (max-width: 480px) {
   .panel-body { padding: 14px 12px 16px; }
-  .btn-yes { padding: 11px 18px; font-size: 17px; }
+  .btn-yes { padding: 11px 14px; font-size: 16px; }
   .hud { padding: 6px 10px; gap: 5px; max-width: 80vw; }
-  .btn-row { gap: 10px; }
+  .btn-row { gap: 8px; }
   .spot-row { padding: 10px 12px; gap: 10px; }
   .spot-row-emoji { font-size: 26px; }
-  .lang-toggle { padding: 4px 10px; }
+  .lang-icon { width: 26px; height: 26px; font-size: 14px; }
+  .speech-bubble { padding: 7px 12px 8px; }
+  .speech-bubble .sb-text { font-size: 13px; }
 }
 </style>
