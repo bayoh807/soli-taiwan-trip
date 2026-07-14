@@ -1,6 +1,11 @@
 <script setup>
 import { ref, reactive, computed, nextTick, onMounted, watch } from 'vue'
-import html2canvas from 'html2canvas'
+
+let _h2c = null
+async function getHtml2Canvas() {
+  if (!_h2c) { const m = await import('html2canvas'); _h2c = m.default }
+  return _h2c
+}
 import shipBg    from '../assets/ship-bg-new.webp'
 import mapBg     from '../assets/map-bg-new.webp'
 import jumpSprite from '../assets/jump-sprite.webp'
@@ -729,6 +734,7 @@ watch(() => state.scene4PanelVisible, async (visible) => {
   setTimeout(async () => {
     if (!state.scene4PanelVisible) return
     try {
+      const html2canvas = await getHtml2Canvas()
       const c = await html2canvas(document.body, {
         useCORS: true,
         scale: Math.min(window.devicePixelRatio || 2, 2),
@@ -814,6 +820,7 @@ async function downloadResult() {
     // Use pre-generated blob if ready (avoids iOS user-gesture timeout)
     let blob = scene4Blob
     if (!blob) {
+      const html2canvas = await getHtml2Canvas()
       const canvas = await html2canvas(document.body, {
         useCORS: true,
         scale: Math.min(window.devicePixelRatio || 2, 2),
