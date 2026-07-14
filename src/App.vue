@@ -1,16 +1,16 @@
 <script setup>
 import { ref, reactive, computed, nextTick, onMounted, watch } from 'vue'
 import html2canvas from 'html2canvas'
-import shipBg    from '../assets/ship-bg-new.png'
-import mapBg     from '../assets/map-bg-new.png'
-import jumpSprite from '../assets/jump-sprite.png'
-import arrowLeft  from '../assets/arrow-left.png'
-import arrowRight from '../assets/arrow-right.png'
-import soliChar   from '../assets/soli-char.png'
+import shipBg    from '../assets/ship-bg-new.webp'
+import mapBg     from '../assets/map-bg-new.webp'
+import jumpSprite from '../assets/jump-sprite.webp'
+import arrowLeft  from '../assets/arrow-left.webp'
+import arrowRight from '../assets/arrow-right.webp'
+import soliChar   from '../assets/soli-char.webp'
 import girlSprite from '../assets/girl-sprite.png'
-import alien1     from '../assets/alien-1.png'
-import alien2     from '../assets/alien-2.png'
-import alien3     from '../assets/alien-3.png'
+import alien1     from '../assets/alien-1.webp'
+import alien2     from '../assets/alien-2.webp'
+import alien3     from '../assets/alien-3.webp'
 
 // ─── Speech Bubble ────────────────────────────────────────────────────────────
 function SpeechBubble(el, options) {
@@ -223,52 +223,52 @@ const I18N  = {
 const tr = computed(() => I18N[lang.value] ?? I18N.en)
 
 // ─── Spot Images (Vite glob — auto-picks up downloaded files) ────────────────
-const _imgs = import.meta.glob('../assets/s*/**/*.{jpg,jpeg,png}', { eager: true, import: 'default' })
+const _imgs = import.meta.glob('../assets/s*/**/*.webp', { eager: true, import: 'default' })
 function si(path) { return _imgs[`../assets/${path}`] || null }
 
 // ─── Spot Data ────────────────────────────────────────────────────────────────
 const S1 = [
   { key:'dadaocheng1', emoji:'👘', name:'大稻埕',
     desc:'百年迪化街漫步，在專業師傅的旗袍店挑選一套屬於你的旗袍，穿著它拍下最美的台灣記憶。',
-    photos:[ si('s1/dadaocheng/1.jpg'), si('s1/dadaocheng/2.jpg'), si('s1/dadaocheng/3.jpg') ].filter(Boolean) },
+    photos:[ si('s1/dadaocheng/1.webp'), si('s1/dadaocheng/2.webp'), si('s1/dadaocheng/3.webp') ].filter(Boolean) },
   { key:'palace',  emoji:'🏛️', name:'故宮博物院',
     desc:'珍藏全球最豐富的中華文物，翠玉白菜、肉形石等鎮館之寶，走進五千年文明史。',
-    photos:[ si('s1/palace/1.jpg'), si('s1/palace/2.jpg'), si('s1/palace/3.jpg') ].filter(Boolean) },
+    photos:[ si('s1/palace/1.webp'), si('s1/palace/2.webp'), si('s1/palace/3.webp') ].filter(Boolean) },
   { key:'101',     emoji:'🏙️', name:'台北 101',
     desc:'508 公尺的世界地標，頂樓觀景台 360° 俯瞰台北全景，日夜各有絕美風貌。',
-    photos:[ si('s1/101/1.jpg'), si('s1/101/2.jpg'), si('s1/101/3.jpg') ].filter(Boolean) },
+    photos:[ si('s1/101/1.webp'), si('s1/101/2.webp'), si('s1/101/3.webp') ].filter(Boolean) },
 ]
 const S2 = [
   { key:'shifen',   emoji:'💧', name:'十分瀑布 + 平溪', recommended: true,
     desc:'台灣版尼加拉瀑布壯觀雄渾，平溪老街放天燈許願，是山林間最浪漫的半日遊。',
-    photos:[ si('s2/shifen/1.jpg'), si('s2/shifen/2.jpg'), si('s2/shifen/3.jpg') ].filter(Boolean) },
+    photos:[ si('s2/shifen/1.webp'), si('s2/shifen/2.webp'), si('s2/shifen/3.webp') ].filter(Boolean) },
   { key:'jiufen',  emoji:'🏘️', name:'九份老街', recommended: true,
     desc:'依山傍海的百年礦業聚落，蜿蜒石階巷弄、紅燈籠倒映雨霧，傳說是《神隱少女》的靈感場景，是台灣最具代表性的懷舊風景。',
-    photos:[ si('s2/jiufen/1.jpg'), si('s2/jiufen/2.jpg'), si('s2/jiufen/3.jpg') ].filter(Boolean) },
+    photos:[ si('s2/jiufen/1.webp'), si('s2/jiufen/2.webp'), si('s2/jiufen/3.webp') ].filter(Boolean) },
   { key:'houtong', emoji:'🐱', name:'猴硐貓村',
     desc:'全台最著名的貓咪聚落，到處都是慵懶的貓咪迎客，是愛貓人士絕對不能錯過的療癒景點。',
-    photos:[ si('s2/houtong/1.jpg'), si('s2/houtong/2.jpg'), si('s2/houtong/3.jpg') ].filter(Boolean) },
+    photos:[ si('s2/houtong/1.webp'), si('s2/houtong/2.webp'), si('s2/houtong/3.webp') ].filter(Boolean) },
   { key:'danshui', emoji:'🌅', name:'淡水老街',
     desc:'淡水河口的百年老街，吃阿給、鐵蛋配河岸夕陽，是台北近郊最輕鬆寫意的午後散策。',
-    photos:[ si('s2/danshui/1.jpg'), si('s2/danshui/2.jpg'), si('s2/danshui/3.jpg') ].filter(Boolean) },
+    photos:[ si('s2/danshui/1.webp'), si('s2/danshui/2.webp'), si('s2/danshui/3.webp') ].filter(Boolean) },
   { key:'art',     emoji:'🎨', name:'展覽',
     desc:'台北最精彩的四檔展覽：古典光影大師、波特羅、共織宇宙、世界是一片感知的膜，藝術能量滿滿的一天。',
-    photos:[ si('s2/art/5.jpg'), si('s2/art/1.jpg'), si('s2/art/2.jpg'), si('s2/art/3.jpg') ].filter(Boolean),
+    photos:[ si('s2/art/5.webp'), si('s2/art/1.webp'), si('s2/art/2.webp'), si('s2/art/3.webp') ].filter(Boolean),
     links:['https://www.instagram.com/p/DaC0tUOAGrm/?igsh=MWlnZHl3eTQ4MndyMg==', 'https://www.instagram.com/p/DahwZzNgdGy/?igsh=NzZuajhrZTBxZTl4', 'https://www.instagram.com/reel/DWL0XM8Ep_d/?igsh=MXc1dXRzY2loeDl2eQ==', 'https://www.instagram.com/reel/DYt7IqXTEKr/?igsh=ZWY0ZzJ5OXJheW5x'] },
   { key:'other',   emoji:'🗺️', name:'我有其他想去的地方',
     desc:'有心動的地方嗎？找到之後一定要跟我說喔！不管是夜景、小吃街、特色咖啡廳，Justin 幫你把它排進行程 ✨',
-    photos:[ si('s2/other/1.jpg') ].filter(Boolean) },
+    photos:[ si('s2/other/1.webp') ].filter(Boolean) },
 ]
 const S3 = [
   { key:'raohe',   emoji:'🏮', name:'饒河街夜市',
     desc:'百年歷史的老牌夜市，胡椒餅、藥燉排骨飄香，在廟宇前品嚐最道地的台北滋味。',
-    photos:[ si('s3/raohe/1.jpg'), si('s3/raohe/2.jpg'), si('s3/raohe/3.jpg') ].filter(Boolean) },
+    photos:[ si('s3/raohe/1.webp'), si('s3/raohe/2.webp'), si('s3/raohe/3.webp') ].filter(Boolean) },
   { key:'shilin',  emoji:'🍢', name:'士林夜市',
     desc:'台灣最大最知名的夜市，豪大大雞排、鹹酥雞、草莓泡泡冰，每樣都讓你難以抗拒。',
-    photos:[ si('s3/shilin/1.jpg'), si('s3/shilin/2.jpg'), si('s3/shilin/3.jpg') ].filter(Boolean) },
+    photos:[ si('s3/shilin/1.webp'), si('s3/shilin/2.webp'), si('s3/shilin/3.webp') ].filter(Boolean) },
   { key:'ningxia',   emoji:'🧧', name:'寧夏夜市',
     desc:'台北最受在地人喜愛的傳統夜市，蚵仔煎、蔥肉餅、天婦羅樣樣道地，密度高、氣氛熱鬧，吃完保證滿足。',
-    photos:[ si('s3/ningxia/1.jpg'), si('s3/ningxia/2.jpg'), si('s3/ningxia/3.jpg') ].filter(Boolean) },
+    photos:[ si('s3/ningxia/1.webp'), si('s3/ningxia/2.webp'), si('s3/ningxia/3.webp') ].filter(Boolean) },
 ]
 
 // ─── Spot i18n ────────────────────────────────────────────────────────────────
