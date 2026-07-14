@@ -239,11 +239,11 @@ const S1 = [
     photos:[ si('s1/101/1.jpg'), si('s1/101/2.jpg'), si('s1/101/3.jpg') ].filter(Boolean) },
 ]
 const S2 = [
-  { key:'shifen',   emoji:'💧', name:'十分瀑布 + 平溪',
+  { key:'shifen',   emoji:'💧', name:'十分瀑布 + 平溪', recommended: true,
     desc:'台灣版尼加拉瀑布壯觀雄渾，平溪老街放天燈許願，是山林間最浪漫的半日遊。',
     photos:[ si('s2/shifen/1.jpg'), si('s2/shifen/2.jpg'), si('s2/shifen/3.jpg') ].filter(Boolean) },
-  { key:'jiufen',  emoji:'🏘️', name:'九份老街',
-    desc:'依山傍海的百年礦業聚落，蜿蜒石階巷弄、紅燈籠倒映雨霧，是台灣最具代表性的懷舊風景。',
+  { key:'jiufen',  emoji:'🏘️', name:'九份老街', recommended: true,
+    desc:'依山傍海的百年礦業聚落，蜿蜒石階巷弄、紅燈籠倒映雨霧，傳說是《神隱少女》的靈感場景，是台灣最具代表性的懷舊風景。',
     photos:[ si('s2/jiufen/1.jpg'), si('s2/jiufen/2.jpg'), si('s2/jiufen/3.jpg') ].filter(Boolean) },
   { key:'houtong', emoji:'🐱', name:'猴硐貓村',
     desc:'全台最著名的貓咪聚落，到處都是慵懶的貓咪迎客，是愛貓人士絕對不能錯過的療癒景點。',
@@ -252,9 +252,9 @@ const S2 = [
     desc:'淡水河口的百年老街，吃阿給、鐵蛋配河岸夕陽，是台北近郊最輕鬆寫意的午後散策。',
     photos:[ si('s2/danshui/1.jpg'), si('s2/danshui/2.jpg'), si('s2/danshui/3.jpg') ].filter(Boolean) },
   { key:'art',     emoji:'🎨', name:'展覽',
-    desc:'台北最精彩的三檔展覽：波特羅、共織宇宙、世界是一片感知的膜，藝術能量滿滿的一天。',
-    photos:[ si('s2/art/1.jpg'), si('s2/art/2.jpg'), si('s2/art/3.jpg') ].filter(Boolean),
-    links:['https://www.instagram.com/p/DahwZzNgdGy/?igsh=NzZuajhrZTBxZTl4', 'https://www.instagram.com/reel/DWL0XM8Ep_d/?igsh=MXc1dXRzY2loeDl2eQ==', 'https://www.instagram.com/reel/DYt7IqXTEKr/?igsh=ZWY0ZzJ5OXJheW5x'] },
+    desc:'台北最精彩的四檔展覽：古典光影大師、波特羅、共織宇宙、世界是一片感知的膜，藝術能量滿滿的一天。',
+    photos:[ si('s2/art/5.jpg'), si('s2/art/1.jpg'), si('s2/art/2.jpg'), si('s2/art/3.jpg') ].filter(Boolean),
+    links:['https://www.instagram.com/p/DaC0tUOAGrm/?igsh=MWlnZHl3eTQ4MndyMg==', 'https://www.instagram.com/p/DahwZzNgdGy/?igsh=NzZuajhrZTBxZTl4', 'https://www.instagram.com/reel/DWL0XM8Ep_d/?igsh=MXc1dXRzY2loeDl2eQ==', 'https://www.instagram.com/reel/DYt7IqXTEKr/?igsh=ZWY0ZzJ5OXJheW5x'] },
   { key:'other',   emoji:'🗺️', name:'我有其他想去的地方',
     desc:'有心動的地方嗎？找到之後一定要跟我說喔！不管是夜景、小吃街、特色咖啡廳，Justin 幫你把它排進行程 ✨',
     photos:[ si('s2/other/1.jpg') ].filter(Boolean) },
@@ -294,9 +294,9 @@ const SPOT_L10N = {
     ja: { name: '十分滝 + 平溪', desc: '台湾のナイアガラと呼ばれる十分滝の迫力を体感し、平溪老街でランタンに願いを込めて空へ飛ばそう。' },
   },
   jiufen: {
-    en: { name: 'Jiufen Old Street', desc: 'A century-old mining village perched between mountains and sea. Winding stone steps, glowing red lanterns in the mist — the most iconic nostalgic scenery in Taiwan.' },
-    kr: { name: '지우펀 올드 스트리트', desc: '산과 바다 사이에 자리한 100년 광산 마을. 구불구불한 돌계단과 빗속에 붉게 빛나는 홍등이 어우러진, 대만에서 가장 낭만적인 풍경.' },
-    ja: { name: '九份老街', desc: '山と海に挟まれた百年の鉱山集落。石段の路地と霧の中に輝く赤いランタンが織りなす、台湾一ノスタルジックな風景。' },
+    en: { name: 'Jiufen Old Street', desc: 'A century-old mining village perched between mountains and sea. Winding stone steps, glowing red lanterns in the mist — said to have inspired Spirited Away, and the most iconic nostalgic scenery in Taiwan.' },
+    kr: { name: '지우펀 올드 스트리트', desc: '산과 바다 사이에 자리한 100년 광산 마을. 구불구불한 돌계단과 빗속에 붉게 빛나는 홍등, 《센과 치히로의 행방불명》의 배경 모델로 알려진, 대만에서 가장 낭만적인 풍경.' },
+    ja: { name: '九份老街', desc: '山と海に挟まれた百年の鉱山集落。石段の路地と霧の中に輝く赤いランタン、そして『千と千尋の神隠し』のモデルとも言われる台湾一ノスタルジックな風景。' },
   },
   houtong: {
     en: { name: 'Houtong Cat Village', desc: 'Taiwan\'s most famous cat haven — laid-back kitties greet you around every corner. A must-visit for all cat lovers.' },
@@ -309,9 +309,9 @@ const SPOT_L10N = {
     ja: { name: '淡水老街', desc: '淡水河沿いの百年の老街。阿給や鉄卵を食べながら台北近郊で最も美しい夕日を眺める、気ままな午後の散策。' },
   },
   art: {
-    en: { name: 'Exhibitions', desc: 'Three unmissable Taipei shows: Botero, Weaving the Cosmos, and The World is a Membrane of Perception — an art-packed day unlike any other.' },
-    kr: { name: '전시회', desc: '타이베이 최고의 세 전시: 보테로, 우주를 짜다, 세계는 지각의 막 — 예술로 가득 찬 하루.' },
-    ja: { name: '展覧会', desc: '台北で見逃せない三つの展示：ボテロ、宇宙を織る、知覚の膜としての世界 — アートに満ちた特別な一日。' },
+    en: { name: 'Exhibitions', desc: 'Four unmissable Taipei shows: Old Masters of Light (Rembrandt to Goya), Botero, Weaving the Cosmos, and The World is a Membrane of Perception — an art-packed day unlike any other.' },
+    kr: { name: '전시회', desc: '타이베이 최고의 네 전시: 고전 빛의 거장 (렘브란트에서 고야까지), 보테로, 우주를 짜다, 세계는 지각의 막 — 예술로 가득 찬 하루.' },
+    ja: { name: '展覧会', desc: '台北で見逃せない四つの展示：古典光影大師（レンブラントからゴヤへ）、ボテロ、宇宙を織る、知覚の膜としての世界 — アートに満ちた特別な一日。' },
   },
   other: {
     en: { name: 'I have somewhere in mind', desc: 'Have a place that caught your eye? Find it and make sure to tell me — whether it\'s a scenic spot, a food street, or a hidden café, Justin will make it happen ✨' },
@@ -641,6 +641,16 @@ function nextPhoto() {
     carouselImgLoaded.value = false
     m.photoIdx++
   }
+}
+
+let carouselTouchStartX = 0
+function onCarouselTouchStart(e) {
+  carouselTouchStartX = e.touches[0].clientX
+}
+function onCarouselTouchEnd(e) {
+  const delta = e.changedTouches[0].clientX - carouselTouchStartX
+  if (delta < -40) nextPhoto()
+  else if (delta > 40) prevPhoto()
 }
 
 function makeSpots(stage, arrOrRef) {
@@ -1097,6 +1107,7 @@ async function downloadResult() {
   <Teleport to="body">
     <div v-if="state.spotModal" class="spot-overlay" @click.self="closeSpotModal">
       <div class="spot-popup" role="dialog">
+        <span v-if="state.spotModal.opt.recommended" class="popup-rec-badge">👍 추천</span>
         <button class="spot-popup-x" @click="closeSpotModal" aria-label="關閉">✕</button>
         <div class="spot-popup-hero">{{ state.spotModal.opt.emoji }}</div>
         <div class="spot-popup-content">
@@ -1104,7 +1115,9 @@ async function downloadResult() {
           <p  class="spot-popup-desc">{{ state.spotModal.opt.desc }}</p>
           <!-- Photo Carousel -->
           <div v-if="state.spotModal.opt.photos?.length" class="spot-carousel">
-            <div class="carousel-track">
+            <div class="carousel-track"
+                 @touchstart.passive="onCarouselTouchStart"
+                 @touchend.passive="onCarouselTouchEnd">
               <div v-if="!carouselImgLoaded" class="carousel-skeleton"></div>
               <img :src="state.spotModal.opt.photos[state.spotModal.photoIdx]"
                    class="carousel-img" :class="{ 'carousel-img-loaded': carouselImgLoaded }"
@@ -1173,9 +1186,9 @@ async function downloadResult() {
 }
 @media (min-width: 769px) {
   .fixed-bg .scene-bg {
+    top: 50%; right: auto; bottom: auto; left: 50%;
+    transform: translate(-50%, -50%);
     object-fit: contain; width: auto; height: 100%;
-    left: 50%; transform: translateX(-50%);
-    inset: unset; top: 0; bottom: 0;
   }
 }
 
@@ -1507,6 +1520,7 @@ async function downloadResult() {
 .spot-row {
   display: flex; align-items: center; gap: 14px;
   padding: 12px 16px; border-radius: 14px;
+  position: relative;
   background: linear-gradient(#fffdf4,#f7ecd2);
   border: 2px solid #cfae74;
   box-shadow: 0 2px 0 #cfae74, 0 4px 10px rgba(60,40,10,.12), inset 0 1px 0 #fff;
@@ -1600,6 +1614,14 @@ async function downloadResult() {
   animation: slideUp .32s cubic-bezier(.2,1.3,.5,1) both;
   position: relative; overflow: hidden;
 }
+.popup-rec-badge {
+  position: absolute; top: 14px; left: 16px; z-index: 3;
+  background: #fff8e1; border: 1.5px solid #f5b800;
+  border-radius: 999px; padding: 4px 12px;
+  font-size: 13px; color: #7a5a00;
+  font-family: 'Baloo 2', sans-serif; line-height: 1.4;
+  box-shadow: 0 2px 6px rgba(220,160,0,.3); pointer-events: none;
+}
 .spot-popup-x {
   position: absolute; top: 14px; right: 16px;
   width: 32px; height: 32px; border-radius: 50%;
@@ -1644,13 +1666,20 @@ async function downloadResult() {
 }
 .carousel-arrow {
   position: absolute; top: 50%; transform: translateY(-50%);
-  width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(0,0,0,.42); border: none; cursor: pointer;
-  color: #fff; font-size: 22px; line-height: 1;
+  width: 42px; height: 42px; border-radius: 50%;
+  background: rgba(255,255,255,.88);
+  border: 2px solid rgba(95,69,38,.35);
+  cursor: pointer;
+  color: #5f4526; font-size: 24px; font-weight: bold; line-height: 1;
   display: flex; align-items: center; justify-content: center;
-  transition: background .14s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,.28);
+  transition: background .14s ease, transform .14s ease;
 }
-.carousel-arrow:hover { background: rgba(0,0,0,.62); }
+.carousel-arrow:hover {
+  background: rgba(255,255,255,1);
+  transform: translateY(-50%) scale(1.08);
+}
+.carousel-arrow:active { transform: translateY(-50%) scale(.94); }
 .carousel-arrow-l { left: 8px; }
 .carousel-arrow-r { right: 8px; }
 .carousel-dots {
