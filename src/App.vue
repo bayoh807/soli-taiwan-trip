@@ -253,9 +253,10 @@ const S2 = [
   { key:'houtong', emoji:'🐱', name:'猴硐貓村',
     desc:'全台最著名的貓咪聚落，到處都是慵懶的貓咪迎客，是愛貓人士絕對不能錯過的療癒景點。',
     photos:[ si('s2/houtong/1.webp'), si('s2/houtong/2.webp'), si('s2/houtong/3.webp') ].filter(Boolean) },
-  { key:'danshui', emoji:'🌅', name:'淡水老街',
-    desc:'淡水河口的百年老街，吃阿給、鐵蛋配河岸夕陽，是台北近郊最輕鬆寫意的午後散策。',
-    photos:[ si('s2/danshui/1.webp'), si('s2/danshui/2.webp'), si('s2/danshui/3.webp') ].filter(Boolean) },
+  { key:'creative', emoji:'🏭', name:'文創園區',
+    desc:'台北雙星文創聖地：松山文創園區（百年菸廠化身當代展館）與華山 1914（老酒廠改建的藝術基地），展覽、設計市集、咖啡廳一應俱全，創意能量滿溢的一天。',
+    photos:[ si('s2/creative/1.webp'), si('s2/creative/2.webp') ].filter(Boolean),
+    links:['https://www.songshanculturalpark.org/exhibition/activity/840b0803-826e-407f-bd62-8447b51cf9c2', 'https://www.huashan1914.com/w/huashan1914_en/index'] },
   { key:'art',     emoji:'🎨', name:'展覽',
     desc:'台北最精彩的四檔展覽：古典光影大師、波特羅、共織宇宙、世界是一片感知的膜，藝術能量滿滿的一天。',
     photos:[ si('s2/art/5.webp'), si('s2/art/1.webp'), si('s2/art/2.webp'), si('s2/art/3.webp') ].filter(Boolean),
@@ -308,10 +309,10 @@ const SPOT_L10N = {
     kr: { name: '허우통 고양이 마을', desc: '대만 최고의 고양이 마을. 느긋한 고양이들이 곳곳에서 반겨주는, 고양이를 사랑한다면 절대 놓칠 수 없는 힐링 명소.' },
     ja: { name: '猴硐猫村', desc: '台湾一有名な猫の村。のんびりした猫たちがあちこちで出迎えてくれる、猫好きなら絶対に外せない癒しスポット。' },
   },
-  danshui: {
-    en: { name: 'Danshui Old Street', desc: 'A century-old riverside street where you snack on agei and iron eggs while watching the most beautiful sunset in Taipei — the perfect lazy afternoon.' },
-    kr: { name: '단수이 올드 스트리트', desc: '타이베이 근교의 백년 올드 스트리트. 아게이와 철란을 먹으며 강가 석양을 바라보는, 가장 여유로운 오후 산책.' },
-    ja: { name: '淡水老街', desc: '淡水河沿いの百年の老街。阿給や鉄卵を食べながら台北近郊で最も美しい夕日を眺める、気ままな午後の散策。' },
+  creative: {
+    en: { name: 'Creative Parks', desc: 'Two cultural gems in one day: Songshan Cultural Park (a 100-year-old tobacco factory turned contemporary arts hub) and Huashan 1914 (a historic winery reborn as Taipei\'s trendiest art complex). Exhibitions, design markets, and great coffee — all in one.' },
+    kr: { name: '문화창의원', desc: '하루에 두 곳: 쑹산문창원(100년 된 담배 공장이 예술 공간으로)과 화산1914(낡은 양조장이 타이베이 최고의 문화 복합 공간으로 재탄생). 전시, 디자인 마켓, 카페가 한 자리에.' },
+    ja: { name: 'クリエイティブパーク', desc: '一日で二か所：松山文創園区（百年タバコ工場が現代アートの聖地に）と華山1914（旧醸造所が台北随一のカルチャースポットに）。展覧会、デザインマーケット、カフェまで揃う一日。' },
   },
   art: {
     en: { name: 'Exhibitions', desc: 'Four unmissable Taipei shows: Old Masters of Light (Rembrandt to Goya), Botero, Weaving the Cosmos, and The World is a Membrane of Perception — an art-packed day unlike any other.' },
